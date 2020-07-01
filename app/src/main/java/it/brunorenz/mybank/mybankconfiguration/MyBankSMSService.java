@@ -2,22 +2,25 @@ package it.brunorenz.mybank.mybankconfiguration;
 
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.io.FileOutputStream;
-
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
 
 public class MyBankSMSService extends Service {
     private static final String TAG =
             MyBankSMSService.class.getSimpleName();
-    private FileOutputStream logFile;
+
     private SmsBroadcastReceiver smsReceiver;
+    //private FileManager fileManager;
+
+    public MyBankSMSService() {
+        //fileManager = new FileManager(this.getApplicationContext(), "MyBankSMSService.txt");
+    }
 
     @Nullable
     @Override
@@ -53,7 +56,7 @@ public class MyBankSMSService extends Service {
 
         int SERVICE_ID = 21011966;
         startForeground(SERVICE_ID, builder.build());
-        writeLog("Service created");
+        //fileManager.writeLog("Service created");
     }
 
 
@@ -61,7 +64,7 @@ public class MyBankSMSService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         Log.i(TAG, "Received start id " + startId + ": " + intent);
-        writeLog("Service started with id " + startId + ": " + intent);
+        //fileManager.writeLog("Service started with id " + startId + ": " + intent);
         return START_STICKY; // run until explicitly stopped.
     }
 
@@ -71,40 +74,9 @@ public class MyBankSMSService extends Service {
         if (smsReceiver != null)
             this.unregisterReceiver(smsReceiver);
         Log.i(TAG, "Service Stopped.");
-        writeLog("Service stopped");
-        closeLog();
+        //fileManager.writeLog("Service stopped");
+        //fileManager.closeLog();
     }
 
-    private void writeLog(String message) {
-        FileOutputStream f = getLogFile();
-        try {
-            if (f != null && message != null) {
-                f.write((TAG + " : " + message).getBytes());
-                f.flush(); }
-        } catch (Exception e) {
 
-        }
-    }
-
-    private void closeLog()
-    {
-        try {
-            FileOutputStream f = getLogFile();
-            if (f != null) f.close();
-        } catch (Exception e)
-        {
-
-        }
-    }
-    private FileOutputStream getLogFile() {
-        if (logFile == null) {
-            String filename = "MyBankSMSService.txt";
-            try {
-                logFile = this.getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
-            } catch (Exception e) {
-                Log.e(TAG, "Errore apertura log ", e);
-            }
-        }
-        return logFile;
-    }
 }

@@ -16,7 +16,7 @@ public class MyBankNotificationService extends NotificationListenerService {
             MyBankNotificationService.class.getSimpleName();
 
     private static final String[] COMMONAPPS = {
-            "it.mybank", "com.facebook", "com.whatsapp", "com.instagram"
+            "com.facebook", "com.whatsapp", "com.instagram" ,"it.brunorenz"
     };
 
     public IBinder onBind(Intent intent) {
