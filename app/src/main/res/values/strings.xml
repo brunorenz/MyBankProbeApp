@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">MyBankProbe</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+    <!--  MyBank Resources -->
+    <string name="MYBANKSEVER">https://mybank.65bruno.it/mybank/rest/</string>
+    <string name="REGISTERSMS">registerSMS</string>
+    <string name="BASICAUTH">Basic YWRtaW46YWgwNjB2eUEu</string>
+
+    <string name="CHANNEL_NAME">MyBankChannel</string>
+    <string name="CHANNEL_DESCRIPTION">MyBank notification channel id</string>
+
+
+    <string name="action_ok">OK</string>
+    <string name="permission_sms_alert_dialog_title">Richiesta permessi SMS</string>
+    <string name="permission_sms_dialog_message">The app will now request your permission to read SMS related services.</string>
+    <string name="permission_notify_alert_dialog_title">Richiesta permessi Notifiche</string>
+    <string name="permission_notify_dialog_message">The app will now request your permission to listen to notification related services.</string>
+
+</resources>

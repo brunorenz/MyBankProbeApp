@@ -1,0 +1,209 @@
+package it.brunorenz.mybank.mybankconfiguration;
+
+import android.Manifest;
+import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import it.brunorenz.mybank.mybankconfiguration.service.MyBankServerManager;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
+    private static final int SMS_PERMISSION_CODE = 0;
+    public static final String CHANNEL_ID = "MyBankCfgCHID";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        initApplication();
+        if (!hasReadSmsPermission()) {
+            showRequestPermissionsInfoAlertDialog("SMS");
+        }
+        if (!hasNotificationListenerPermission()) {
+            showRequestPermissionsInfoAlertDialog("NOTIFY");
+        }
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+        Log.d(TAG, "Android Version : " + Build.VERSION.SDK_INT);
+        Log.d(TAG, "Android KITKAT Version : " + Build.VERSION_CODES.KITKAT);
+    }
+
+    private void initApplication() {
+        // Create notification channel
+        createNotificationChannel();
+        // create ServerManager
+        MyBankServerManager.createMyBankServerManager(getApplicationContext());
+
+        // start service
+        Intent i = new Intent(this, MyBankSMSService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(i);
+        } else {
+            startService(i);
+        }
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Runtime permission shenanigans
+     */
+    private boolean hasNotificationListenerPermission() {
+        return ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private boolean hasReadSmsPermission() {
+        return ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED;
+    }
+
+
+    /**
+     * Validates if the app has readSmsPermissions and the mobile phone is valid
+     *
+     * @return boolean validation value
+
+    private boolean hasValidPreConditions() {
+        if (!hasReadSmsPermission()) {
+            requestReadAndSendSmsPermission();
+            return false;
+        }
+
+        return true;
+    }
+*/
+    /**
+     * Optional informative alert dialog to explain the user why the app needs the Read/Send SMS permission
+     */
+    private void showRequestPermissionsInfoAlertDialog(String tipo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        if (tipo.equals("SMS")) {
+            builder.setTitle(R.string.permission_sms_alert_dialog_title);
+            builder.setMessage(R.string.permission_sms_dialog_message);
+            builder.setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    requestReadAndSendSmsPermission();
+                }
+            });
+        } else
+        {
+            builder.setTitle(R.string.permission_notify_alert_dialog_title);
+            builder.setMessage(R.string.permission_notify_dialog_message);
+            builder.setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+                    startActivity(intent);
+//                    requestNotificationListenPermission();
+                }
+            });
+
+        }
+        builder.show();
+    }
+
+    private void requestNotificationListenPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
+            Log.d(TAG, "shouldShowRequestPermissionRationale(), no permission requested");
+            return;
+        }
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE},
+                SMS_PERMISSION_CODE);
+    }
+
+    private void requestReadAndSendSmsPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.READ_SMS)) {
+            Log.d(TAG, "shouldShowRequestPermissionRationale(), no permission requested");
+            return;
+        }
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_SMS, Manifest.permission.RECEIVE_SMS},
+                SMS_PERMISSION_CODE);
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.CHANNEL_NAME);
+            String description = getString(R.string.CHANNEL_DESCRIPTION);
+            //int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_LOW);
+            channel.setDescription(description);
+            channel.setImportance(NotificationManager.IMPORTANCE_LOW);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
