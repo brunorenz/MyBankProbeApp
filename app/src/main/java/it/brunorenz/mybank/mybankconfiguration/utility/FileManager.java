@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,13 +26,12 @@ public class FileManager {
 
     private File getLogFile() {
         if (fileLog == null) {
-            //String filename = "MyBankSMSService.txt";
             fileLog = new File(context.getFilesDir(), fileName);
             try {
                 if (!fileLog.exists()) {
                     fileLog.createNewFile();
                 }
-                Toast.makeText(context, "Apro file " + fileLog.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                Log.d(TAG,"Apro file " + fileLog.getAbsolutePath());
             } catch (IOException e) {
                 Log.e(TAG, "Errore apertura file", e);
             }
@@ -60,7 +60,7 @@ public class FileManager {
         }
 
     }
-    public void writeLog(String message) {
+    public void writeLine(String message) {
         OutputStreamWriter writer = getWriter();
         try {
             if (writer != null && message != null) {
@@ -70,5 +70,17 @@ public class FileManager {
         } catch (Exception e) {
 
         }
+    }
+
+    public String readLine()
+    {
+        getBufferedReader();
+        FileReader fr=new FileReader(file);   //reads the file
+        BufferedReader br=new BufferedReader(fr);  //cr
+    }
+
+    private BufferedReader getBufferedReader()
+    {
+
     }
 }

@@ -1,4 +1,6 @@
 package it.brunorenz.mybank.mybankconfiguration.network;
 
-public interface IDataContainer {
+import java.io.Serializable;
+
+public interface IDataContainer extends Serializable {
 }

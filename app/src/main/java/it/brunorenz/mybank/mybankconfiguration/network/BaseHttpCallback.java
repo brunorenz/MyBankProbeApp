@@ -1,14 +1,17 @@
 package it.brunorenz.mybank.mybankconfiguration.network;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import it.brunorenz.mybank.mybankconfiguration.MainActivity;
 import it.brunorenz.mybank.mybankconfiguration.R;
+import it.brunorenz.mybank.mybankconfiguration.RefreshTask;
 import it.brunorenz.mybank.mybankconfiguration.bean.Error;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -20,37 +23,40 @@ public abstract class BaseHttpCallback implements Callback {
     private String intent;
     private Context context;
     private boolean sendNotify;
+    private IDataContainer dataContainer;
     private static final String TAG =
             BaseHttpCallback.class.getSimpleName();
 
     protected abstract void onHttpResponse(Call call, Response response) throws IOException;
 
-    public BaseHttpCallback(Context context, String intent, boolean sendNotify) {
+    public BaseHttpCallback(Context context, String intent, IDataContainer dataContainer, boolean sendNotify) {
         this.context = context;
         this.intent = intent;
         this.sendNotify = sendNotify;
+        this.dataContainer = dataContainer;
     }
 
-    protected boolean isSendNotification()
-    {
+    protected IDataContainer getDataContainer() {
+        return dataContainer;
+    }
+
+    protected boolean isSendNotification() {
         return sendNotify;
     }
+
     @Override
     public void onFailure(Call call, IOException e) {
         Log.d(TAG, "Failed !!", e);
         Error er = new Error();
         er.setCode(999);
-        sendNotification(er,"MyBank error : "+e.getMessage());
+        sendNotification(er, "MyBank error : " + e.getMessage());
         //call.cancel();
     }
 
     @Override
     public void onResponse(Call call, Response response) throws IOException {
         onHttpResponse(call, response);
-        /*
-        if (intent != null)
-            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(intent));
-        */
+
     }
 
     protected void sendNotification(Error errore, String _message) {
@@ -71,5 +77,14 @@ public abstract class BaseHttpCallback implements Callback {
 // notificationId is a unique int for each notification that you must define
         int id = (new Long(System.currentTimeMillis() / 1000)).intValue();
         notificationManager.notify(id, builder.build());
+    }
+
+    protected void sendBroadCast(Serializable data) {
+        if (intent != null) {
+            Intent i = new Intent(intent);
+            i.putExtra("DATI", data);
+            context.sendBroadcast(i);
+        }
+
     }
 }

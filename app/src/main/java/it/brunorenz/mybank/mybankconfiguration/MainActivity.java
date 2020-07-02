@@ -6,9 +6,11 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,13 +27,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.service.MyBankServerManager;
+import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final int SMS_PERMISSION_CODE = 0;
     public static final String CHANNEL_ID = "MyBankCfgCHID";
+    private BroadcastReceiver dataUpdateReceiver;
+    private MyBankServerManager myBankServer;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerMainActivityBroadcastReceiver();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (dataUpdateReceiver != null) unregisterReceiver(dataUpdateReceiver);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +77,14 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Android KITKAT Version : " + Build.VERSION_CODES.KITKAT);
     }
 
+
     private void initApplication() {
         // Create notification channel
         createNotificationChannel();
         // create ServerManager
-        MyBankServerManager.createMyBankServerManager(getApplicationContext());
-
+        myBankServer = MyBankServerManager.createMyBankServerManager(getApplicationContext());
+        // create Broadcast receiver
+        registerMainActivityBroadcastReceiver();
         // start service
         Intent i = new Intent(this, MyBankSMSService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -72,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             startService(i);
         }
+        //
+        myBankServer.getExcludedNotifications(RefreshTask.DATA_EXCLUDED_MESSAGE,null);
 
     }
 
@@ -119,14 +141,14 @@ public class MainActivity extends AppCompatActivity {
      * @return boolean validation value
 
     private boolean hasValidPreConditions() {
-        if (!hasReadSmsPermission()) {
-            requestReadAndSendSmsPermission();
-            return false;
-        }
-
-        return true;
+    if (!hasReadSmsPermission()) {
+    requestReadAndSendSmsPermission();
+    return false;
     }
-*/
+
+    return true;
+    }
+     */
     /**
      * Optional informative alert dialog to explain the user why the app needs the Read/Send SMS permission
      */
@@ -142,8 +164,7 @@ public class MainActivity extends AppCompatActivity {
                     requestReadAndSendSmsPermission();
                 }
             });
-        } else
-        {
+        } else {
             builder.setTitle(R.string.permission_notify_alert_dialog_title);
             builder.setMessage(R.string.permission_notify_dialog_message);
             builder.setPositiveButton(R.string.action_ok, new DialogInterface.OnClickListener() {
@@ -205,5 +226,36 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    private BroadcastReceiver createBroadcastReceiver() {
+        Log.d(TAG,"Create MainActivity BroadcastReceiver ..");
+        return new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d(TAG, "BroadcastReceiver onReceive.. action "+intent.getAction());
+                if (intent.getAction().equals(RefreshTask.DATA_EXCLUDED_MESSAGE)) {
+                    // Do stuff - maybe update my view based on the changed DB contents
+                    Log.d(TAG,"Update Notifications escluded package ..");
+                    FileManager f = new FileManager(getApplicationContext(),"EXCLUDED.txt");
+                    GenericDataContainer gc = (GenericDataContainer) intent.getSerializableExtra("DATI");
+                    if (gc != null)
+                    for (String s : gc.getExcludedPackage())
+                        f.writeLog(s);
+                    f.closeLog();
+
+                }
+
+                //updateGUI(); //dc.getCurrentData());
+            }
+        };
+    }
+
+    private void registerMainActivityBroadcastReceiver()
+    {
+        if (dataUpdateReceiver == null) dataUpdateReceiver = createBroadcastReceiver();
+        IntentFilter intentFilter = new IntentFilter(RefreshTask.DATA_EXCLUDED_MESSAGE);
+        registerReceiver(dataUpdateReceiver, intentFilter);
+
     }
 }

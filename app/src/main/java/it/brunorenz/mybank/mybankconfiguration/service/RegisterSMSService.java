@@ -9,6 +9,7 @@ import it.brunorenz.mybank.mybankconfiguration.bean.Error;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSResponse;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegistrationInfo;
 import it.brunorenz.mybank.mybankconfiguration.network.BaseHttpCallback;
+import it.brunorenz.mybank.mybankconfiguration.network.IDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.utility.RESTUtil;
 import okhttp3.Call;
 import okhttp3.Response;
@@ -16,8 +17,8 @@ import okhttp3.Response;
 public class RegisterSMSService extends BaseHttpCallback {
     public final static String TAG = RegisterSMSService.class.getName();
 
-    public RegisterSMSService(Context context, String intent, boolean sendNotify) {
-        super(context, intent, sendNotify);
+    public RegisterSMSService(Context context, String intent, IDataContainer dataContainer, boolean sendNotify) {
+        super(context, intent, dataContainer, sendNotify);
     }
 
     @Override

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import it.brunorenz.mybank.mybankconfiguration.R;
+import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
 import it.brunorenz.mybank.mybankconfiguration.network.HttpManager;
+import it.brunorenz.mybank.mybankconfiguration.network.IDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.utility.RESTUtil;
 
 public class MyBankServerManager extends HttpManager {
@@ -38,11 +40,24 @@ public class MyBankServerManager extends HttpManager {
     public void registerSMS(RegisterSMSRequest request, String intent, boolean notify) {
         String url = createUrl(getContext().getString(R.string.REGISTERSMS));
         try {
-            callHttpPost(url, RESTUtil.jsonSerialize(request), new RegisterSMSService(getContext(), intent,true));
+            callHttpPost(url, RESTUtil.jsonSerialize(request), new RegisterSMSService(getContext(), intent, null,true));
         } catch (Exception e)
         {
             Log.d(TAG,"Errore chiamata servizio "+url,e);
         }
 
     }
+
+    public void getExcludedNotifications(String intent, IDataContainer dataContainer) {
+        String url = createUrl(getContext().getString(R.string.GETEXLNOTY));
+        try {
+            if (dataContainer == null) dataContainer = new GenericDataContainer();
+            callHttpGet(url,  new ExcludedNotificationService(getContext(), intent, dataContainer,false));
+        } catch (Exception e)
+        {
+            Log.d(TAG,"Errore chiamata servizio "+url,e);
+        }
+
+    }
+
 }
