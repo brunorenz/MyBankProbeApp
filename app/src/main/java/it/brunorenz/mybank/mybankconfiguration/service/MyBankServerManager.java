@@ -48,11 +48,12 @@ public class MyBankServerManager extends HttpManager {
 
     }
 
-    public void getExcludedNotifications(String intent, IDataContainer dataContainer) {
+    public void getMessageFilter(String intent, String type , IDataContainer dataContainer) {
         String url = createUrl(getContext().getString(R.string.GETEXLNOTY));
+        if (type != null) url = url + "?type="+type;
         try {
             if (dataContainer == null) dataContainer = new GenericDataContainer();
-            callHttpGet(url,  new ExcludedNotificationService(getContext(), intent, dataContainer,false));
+            callHttpGet(url,  new GetMessageFilterService(getContext(), intent, dataContainer,false));
         } catch (Exception e)
         {
             Log.d(TAG,"Errore chiamata servizio "+url,e);

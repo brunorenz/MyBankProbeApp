@@ -6,9 +6,9 @@ import java.util.List;
 import it.brunorenz.mybank.mybankconfiguration.network.IDataContainer;
 
 public class GenericDataContainer implements IDataContainer {
-    private List<String> excludedPackage;
+    private List<MessageFilterData> excludedPackage;
 
-    public List<String> getExcludedPackage() {
+    public List<MessageFilterData> getMessageFilter() {
         if (excludedPackage == null) excludedPackage = new ArrayList<>();
         return excludedPackage;
     }

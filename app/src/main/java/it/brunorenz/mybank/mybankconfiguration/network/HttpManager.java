@@ -17,8 +17,8 @@ import okhttp3.TlsVersion;
 
 public class HttpManager {
     
-    private static final long CONNECT_TIMEOUT = 50000;   // 2 seconds
-    private static final long READ_TIMEOUT = 1000;      // 2 seconds
+    private static final long CONNECT_TIMEOUT = 5000;   // 2 seconds
+    private static final long READ_TIMEOUT = 5000;      // 2 seconds
     private static OkHttpClient okHttpClient = null;
     private static final String TAG =
             HttpManager.class.getSimpleName();

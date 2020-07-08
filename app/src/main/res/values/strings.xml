@@ -13,13 +13,14 @@
     <!--  MyBank Resources -->
     <string name="MYBANKSEVER">https://mybank.65bruno.it/mybank/rest/</string>
     <string name="REGISTERSMS">registerSMS</string>
-    <string name="GETEXLNOTY">getExcludedNotifications</string>
+    <string name="GETEXLNOTY">getMessageFilter</string>
 
     <string name="BASICAUTH">Basic YWRtaW46YWgwNjB2eUEu</string>
 
     <string name="CHANNEL_NAME">MyBankChannel</string>
     <string name="CHANNEL_DESCRIPTION">MyBank notification channel id</string>
-
+    <string name="EXCLUDED_SMS">EXCLUDEDSMS.txt"</string>
+    <string name="EXCLUDED_PUSH">EXCLUDEDPUSH.txt"</string>
 
     <string name="action_ok">OK</string>
     <string name="permission_sms_alert_dialog_title">Richiesta permessi SMS</string>

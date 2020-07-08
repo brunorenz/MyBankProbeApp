@@ -23,13 +23,18 @@ import android.view.View;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
+import it.brunorenz.mybank.mybankconfiguration.bean.MessageFilterData;
 import it.brunorenz.mybank.mybankconfiguration.service.MyBankServerManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
+import kotlin.jvm.internal.Ref;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -93,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
             startService(i);
         }
         //
-        myBankServer.getExcludedNotifications(RefreshTask.DATA_EXCLUDED_MESSAGE,null);
+        myBankServer.getMessageFilter(RefreshTask.DATA_EXCLUDED_SMS_MESSAGE,"SMS" ,null);
+        myBankServer.getMessageFilter(RefreshTask.DATA_EXCLUDED_PUSH_MESSAGE,"PUSH", null);
 
     }
 
@@ -123,12 +129,12 @@ public class MainActivity extends AppCompatActivity {
      * Runtime permission shenanigans
      */
     private boolean hasNotificationListenerPermission() {
-        return ContextCompat.checkSelfPermission(MainActivity.this,
+        return ContextCompat.checkSelfPermission(this,
                 Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE) == PackageManager.PERMISSION_GRANTED;
     }
 
     private boolean hasReadSmsPermission() {
-        return ContextCompat.checkSelfPermission(MainActivity.this,
+        return ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(MainActivity.this,
                         Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED;
@@ -229,21 +235,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private BroadcastReceiver createBroadcastReceiver() {
-        Log.d(TAG,"Create MainActivity BroadcastReceiver ..");
+        Log.d(TAG, "Create MainActivity BroadcastReceiver ..");
         return new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.d(TAG, "BroadcastReceiver onReceive.. action "+intent.getAction());
-                if (intent.getAction().equals(RefreshTask.DATA_EXCLUDED_MESSAGE)) {
+                Log.d(TAG, "BroadcastReceiver onReceive.. action " + intent.getAction());
+                if (intent.getAction().equals(RefreshTask.DATA_EXCLUDED_PUSH_MESSAGE) || intent.getAction().equals(RefreshTask.DATA_EXCLUDED_SMS_MESSAGE)) {
                     // Do stuff - maybe update my view based on the changed DB contents
-                    Log.d(TAG,"Update Notifications escluded package ..");
-                    FileManager f = new FileManager(getApplicationContext(),"EXCLUDED.txt");
+                    Log.d(TAG, "Update Notifications escluded package ..");
                     GenericDataContainer gc = (GenericDataContainer) intent.getSerializableExtra("DATI");
-                    if (gc != null)
-                    for (String s : gc.getExcludedPackage())
-                        f.writeLog(s);
-                    f.closeLog();
+                    if (gc != null) {
+                        boolean sms = intent.getAction().equals(RefreshTask.DATA_EXCLUDED_SMS_MESSAGE);
+                        List<String> msg = new ArrayList<>();
+                        for (MessageFilterData d : gc.getMessageFilter())
+                            msg.add(sms ? d.getSender() : d.getPackageName());
+                        if (!msg.isEmpty()) {
+                            String file = getString(sms ? R.string.EXCLUDED_SMS : R.string.EXCLUDED_PUSH);
+                            FileManager f = new FileManager(getApplicationContext());
+                            f.writeFile(file, msg);
+                        }
 
+                    }
                 }
 
                 //updateGUI(); //dc.getCurrentData());
@@ -251,10 +263,11 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    private void registerMainActivityBroadcastReceiver()
-    {
+    private void registerMainActivityBroadcastReceiver() {
         if (dataUpdateReceiver == null) dataUpdateReceiver = createBroadcastReceiver();
-        IntentFilter intentFilter = new IntentFilter(RefreshTask.DATA_EXCLUDED_MESSAGE);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(RefreshTask.DATA_EXCLUDED_PUSH_MESSAGE);
+        intentFilter.addAction(RefreshTask.DATA_EXCLUDED_SMS_MESSAGE);
         registerReceiver(dataUpdateReceiver, intentFilter);
 
     }
