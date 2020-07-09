@@ -23,6 +23,7 @@ import android.view.View;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +33,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageFilterData;
-import it.brunorenz.mybank.mybankconfiguration.service.MyBankServerManager;
+import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
-import kotlin.jvm.internal.Ref;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (dataUpdateReceiver != null) unregisterReceiver(dataUpdateReceiver);
+        unregisterMainActivityBroadcastReceiver();
+
     }
 
     @Override
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initApplication();
+        // Check permission
         if (!hasReadSmsPermission()) {
             showRequestPermissionsInfoAlertDialog("SMS");
         }
@@ -83,11 +85,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Initial task for MyBank
+     */
     private void initApplication() {
         // Create notification channel
         createNotificationChannel();
         // create ServerManager
-        myBankServer = MyBankServerManager.createMyBankServerManager(getApplicationContext());
+        myBankServer = MyBankServerManager.createMyBankServerManager(getContext());
         // create Broadcast receiver
         registerMainActivityBroadcastReceiver();
         // start service
@@ -98,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
             startService(i);
         }
         //
-        myBankServer.getMessageFilter(RefreshTask.DATA_EXCLUDED_SMS_MESSAGE,"SMS" ,null);
-        myBankServer.getMessageFilter(RefreshTask.DATA_EXCLUDED_PUSH_MESSAGE,"PUSH", null);
+        myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_SMS_MESSAGE, "SMS", null);
+        myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE, "PUSH", null);
 
     }
 
@@ -129,32 +134,17 @@ public class MainActivity extends AppCompatActivity {
      * Runtime permission shenanigans
      */
     private boolean hasNotificationListenerPermission() {
-        return ContextCompat.checkSelfPermission(this,
+        return ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE) == PackageManager.PERMISSION_GRANTED;
     }
 
     private boolean hasReadSmsPermission() {
-        return ContextCompat.checkSelfPermission(this,
+        return ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(MainActivity.this,
+                ContextCompat.checkSelfPermission(getContext(),
                         Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED;
     }
 
-
-    /**
-     * Validates if the app has readSmsPermissions and the mobile phone is valid
-     *
-     * @return boolean validation value
-
-    private boolean hasValidPreConditions() {
-    if (!hasReadSmsPermission()) {
-    requestReadAndSendSmsPermission();
-    return false;
-    }
-
-    return true;
-    }
-     */
     /**
      * Optional informative alert dialog to explain the user why the app needs the Read/Send SMS permission
      */
@@ -180,7 +170,6 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent();
                     intent.setAction(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
                     startActivity(intent);
-//                    requestNotificationListenPermission();
                 }
             });
 
@@ -240,35 +229,51 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.d(TAG, "BroadcastReceiver onReceive.. action " + intent.getAction());
-                if (intent.getAction().equals(RefreshTask.DATA_EXCLUDED_PUSH_MESSAGE) || intent.getAction().equals(RefreshTask.DATA_EXCLUDED_SMS_MESSAGE)) {
+                if (intent.getAction().equals(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE) || intent.getAction().equals(MyBankIntents.DATA_EXCLUDED_SMS_MESSAGE)) {
                     // Do stuff - maybe update my view based on the changed DB contents
                     Log.d(TAG, "Update Notifications escluded package ..");
                     GenericDataContainer gc = (GenericDataContainer) intent.getSerializableExtra("DATI");
                     if (gc != null) {
-                        boolean sms = intent.getAction().equals(RefreshTask.DATA_EXCLUDED_SMS_MESSAGE);
+                        boolean sms = intent.getAction().equals(MyBankIntents.DATA_EXCLUDED_SMS_MESSAGE);
                         List<String> msg = new ArrayList<>();
                         for (MessageFilterData d : gc.getMessageFilter())
                             msg.add(sms ? d.getSender() : d.getPackageName());
                         if (!msg.isEmpty()) {
                             String file = getString(sms ? R.string.EXCLUDED_SMS : R.string.EXCLUDED_PUSH);
-                            FileManager f = new FileManager(getApplicationContext());
+                            FileManager f = new FileManager(getContext());
                             f.writeFile(file, msg);
+                            sendBroadCast(sms ? MyBankIntents.DATA_EXCLUDED_SMS_UPDATE : MyBankIntents.DATA_EXCLUDED_PUSH_UPDATE, null);
                         }
-
                     }
                 }
-
-                //updateGUI(); //dc.getCurrentData());
             }
         };
+    }
+
+    private void unregisterMainActivityBroadcastReceiver() {
+        if (dataUpdateReceiver != null) unregisterReceiver(dataUpdateReceiver);
     }
 
     private void registerMainActivityBroadcastReceiver() {
         if (dataUpdateReceiver == null) dataUpdateReceiver = createBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(RefreshTask.DATA_EXCLUDED_PUSH_MESSAGE);
-        intentFilter.addAction(RefreshTask.DATA_EXCLUDED_SMS_MESSAGE);
+        intentFilter.addAction(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE);
+        intentFilter.addAction(MyBankIntents.DATA_EXCLUDED_SMS_MESSAGE);
         registerReceiver(dataUpdateReceiver, intentFilter);
+    }
 
+    protected void sendBroadCast(String intent, Serializable data) {
+        if (intent != null) {
+            Intent i = new Intent(intent);
+            if (data != null)
+                i.putExtra("DATI", data);
+            Log.d(TAG, "Send broadcast messagge to Intet " + intent);
+            getContext().sendBroadcast(i);
+        }
+    }
+
+    protected Context getContext()
+    {
+        return this;
     }
 }

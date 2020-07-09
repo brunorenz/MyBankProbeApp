@@ -1,4 +1,4 @@
-package it.brunorenz.mybank.mybankconfiguration.service;
+package it.brunorenz.mybank.mybankconfiguration.httpservice;
 
 import android.content.Context;
 import android.util.Log;

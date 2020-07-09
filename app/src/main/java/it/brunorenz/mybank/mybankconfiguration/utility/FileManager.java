@@ -89,6 +89,13 @@ public class FileManager {
         return null;
     }
 
+    /**
+     * Write file line by line
+     *
+     * @param fileName
+     * @param content
+     * @return
+     */
     public int writeFile(String fileName, List<String> content) {
         int rc = 0;
         try {
@@ -97,8 +104,10 @@ public class FileManager {
             file.createNewFile();
             OutputStream ios = new FileOutputStream(file);
             OutputStreamWriter osw = new OutputStreamWriter(ios);
-            for (String l : content)
+            for (String l : content) {
                 osw.write(l);
+                osw.write('\n');
+            }
             osw.close();
         } catch (Exception e) {
             Log.e(TAG, "Errore in scrittura file " + fileName, e);
@@ -108,26 +117,29 @@ public class FileManager {
         return rc;
     }
 
+    /**
+     * Read file line by line
+     *
+     * @param fileName
+     * @return
+     */
     public List<String> readFile(String fileName) {
         List<String> c = new ArrayList<>();
         File file = new File(context.getFilesDir(), fileName);
         try {
-            if (fileLog.exists()) {
+            if (file.exists()) {
                 FileReader fr = new FileReader(file);
                 BufferedReader br = new BufferedReader(fr);
                 String line;
                 while ((line = br.readLine()) != null) c.add(line);
             }
-
         } catch (Exception e) {
             Log.e(TAG, "Errore in lettura file " + fileName, e);
         }
-
-
         return c;
     }
 
     private BufferedReader getBufferedReader() {
-    return null;
+        return null;
     }
 }

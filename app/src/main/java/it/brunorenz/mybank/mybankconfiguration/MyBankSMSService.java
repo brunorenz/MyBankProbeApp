@@ -16,10 +16,8 @@ public class MyBankSMSService extends Service {
             MyBankSMSService.class.getSimpleName();
 
     private SmsBroadcastReceiver smsReceiver;
-    //private FileManager fileManager;
 
     public MyBankSMSService() {
-        //fileManager = new FileManager(this.getApplicationContext(), "MyBankSMSService.txt");
     }
 
     @Nullable
@@ -50,13 +48,11 @@ public class MyBankSMSService extends Service {
         // rigester the receiver
         final IntentFilter filter = new IntentFilter();
         filter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        filter.addAction(MyBankIntents.DATA_EXCLUDED_SMS_UPDATE);
         smsReceiver = new SmsBroadcastReceiver();
         this.registerReceiver(smsReceiver, filter);
-
-
-        int SERVICE_ID = 21011966;
+        int SERVICE_ID = 21011965;
         startForeground(SERVICE_ID, builder.build());
-        //fileManager.writeLog("Service created");
     }
 
 
@@ -64,7 +60,6 @@ public class MyBankSMSService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         Log.i(TAG, "Received start id " + startId + ": " + intent);
-        //fileManager.writeLog("Service started with id " + startId + ": " + intent);
         return START_STICKY; // run until explicitly stopped.
     }
 
@@ -74,9 +69,5 @@ public class MyBankSMSService extends Service {
         if (smsReceiver != null)
             this.unregisterReceiver(smsReceiver);
         Log.i(TAG, "Service Stopped.");
-        //fileManager.writeLog("Service stopped");
-        //fileManager.closeLog();
     }
-
-
 }

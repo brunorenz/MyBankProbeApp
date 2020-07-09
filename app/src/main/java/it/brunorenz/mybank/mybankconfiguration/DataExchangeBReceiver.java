@@ -9,7 +9,7 @@ public class DataExchangeBReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals(RefreshTask.DATA_EXCLUDED_PUSH_MESSAGE)) {
+        if (intent.getAction().equals(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE)) {
             // Do stuff - maybe update my view based on the changed DB contents
         }
     }

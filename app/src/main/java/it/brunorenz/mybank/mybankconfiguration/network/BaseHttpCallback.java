@@ -11,7 +11,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import it.brunorenz.mybank.mybankconfiguration.MainActivity;
 import it.brunorenz.mybank.mybankconfiguration.R;
-import it.brunorenz.mybank.mybankconfiguration.RefreshTask;
 import it.brunorenz.mybank.mybankconfiguration.bean.Error;
 import okhttp3.Call;
 import okhttp3.Callback;

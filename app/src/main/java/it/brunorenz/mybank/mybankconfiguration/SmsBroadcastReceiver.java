@@ -7,8 +7,12 @@ import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
-import it.brunorenz.mybank.mybankconfiguration.service.MyBankServerManager;
+import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
+import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
 
 public class SmsBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG =
@@ -17,7 +21,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
     public SmsBroadcastReceiver() {
         Log.d(TAG, "Register " + TAG);
     }
-
+    private List<String> filter;
     @Override
     public void onReceive(Context context, Intent intent) {
         String smsSender = "";
@@ -27,36 +31,43 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                 smsSender = smsMessage.getDisplayOriginatingAddress();
                 smsBody.append(smsMessage.getMessageBody());
             }
-
-            RegisterSMSRequest request = new RegisterSMSRequest();
-            request.setType("SMS");
-            request.setSender(smsSender);
-            request.setMessage(smsBody.toString());
-
-            //Log.d(TAG, "SMS from " + smsSender);
-            //Log.d(TAG, "SMS text " + smsBody.toString());
-            MyBankServerManager server = MyBankServerManager.createMyBankServerManager(context);
-            server.registerSMS(request, null,true);
-            //sendNotification(server.getContext());
+            if (validMessage(smsSender,context)) {
+                RegisterSMSRequest request = new RegisterSMSRequest();
+                request.setType("SMS");
+                request.setSender(smsSender);
+                request.setMessage(smsBody.toString());
+                MyBankServerManager server = MyBankServerManager.createMyBankServerManager(context);
+                server.registerSMS(request, null, true);
+            }
+        } else if (intent.getAction().equals(MyBankIntents.DATA_EXCLUDED_SMS_UPDATE))
+        {
+            Log.d(TAG,"Update SMS filter!");
+            filter = null;
+            getFilter(context);
         }
 
     }
-/*
-    private void sendNotification(Context context)
-    {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
-                .setSmallIcon(R.drawable.iconfinder_walletmoneyshoppingatmcard_192)
-                .setContentTitle("MyBank notification")
-                .setContentText("SMS inviato a MyBank!")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                // Set the intent that will fire when the user taps the notification
-                //.setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 
-// notificationId is a unique int for each notification that you must define
-        int id = (new Long(System.currentTimeMillis() / 1000)).intValue();
-        notificationManager.notify(id, builder.build());
+    private boolean validMessage(String sender,Context context) {
+        if (sender != null) {
+            List<String> filter = getFilter(context);
+            if (filter != null && !filter.isEmpty()) {
+                for (String p : filter) {
+                    Log.d(TAG,"Check sender "+sender+" - compare to "+p);
+                    if (sender.startsWith(p)) return false;
+                }
+            }
+        }
+        return true;
     }
-    */
+
+    private List<String> getFilter(Context context) {
+        if (filter == null) filter = new ArrayList<>();
+        if (filter.isEmpty()) {
+            FileManager f = new FileManager(context);
+            filter = f.readFile(context.getString(R.string.EXCLUDED_SMS));
+            Log.d(TAG,"Reads "+filter.size()+" record from SMS filter");
+        }
+        return filter;
+    }
 }
