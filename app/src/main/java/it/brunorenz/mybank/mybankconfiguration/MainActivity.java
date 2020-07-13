@@ -129,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
-            transaction.add(R.id.nav_host_fragment,new SettingFragment());
-            transaction.addToBackStack(null);
+            transaction.replace(R.id.nav_host_fragment,new SettingFragment());
+            //transaction.addToBackStack(null);
             transaction.commit();
             return true;
         } else if (id == R.id.refresh_filter) {
