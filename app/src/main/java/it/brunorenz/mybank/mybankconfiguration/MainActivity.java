@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -31,6 +32,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageFilterData;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
@@ -124,8 +127,19 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            FragmentManager manager = getSupportFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.add(R.id.nav_host_fragment,new SettingFragment());
+            transaction.addToBackStack(null);
+            transaction.commit();
+            return true;
+        } else if (id == R.id.refresh_filter) {
+            myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_SMS_MESSAGE, "SMS", null);
+            myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE, "PUSH", null);
+            Toast.makeText(this, "Aggiornamento effettuato", Toast.LENGTH_LONG).show();
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
