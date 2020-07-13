@@ -1,16 +1,50 @@
 package it.brunorenz.mybank.mybankconfiguration;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 
-public class SettingFragment extends Fragment {
+public class SettingFragment extends PreferenceFragmentCompat {
 
+
+    private static final String TAG =
+            SettingFragment.class.getSimpleName();
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        setPreferencesFromResource(R.xml.settings, rootKey);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        Log.d(TAG,"onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null)
+        {
+            Object c = savedInstanceState.get("connTimeout");
+            Log.d(TAG,"connTimeout = "+c);
+        }
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public boolean onPreferenceTreeClick(Preference preference) {
+        Log.d(TAG,"onPreferenceTreeClick "+preference.toString());
+        return super.onPreferenceTreeClick(preference);
+    }
+    /*
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
@@ -31,4 +65,5 @@ public class SettingFragment extends Fragment {
             }
         });
     }
+    */
 }

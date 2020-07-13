@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.preference.PreferenceCategory
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="Parametri Connessione">
+
+        <androidx.preference.EditTextPreference
+            android:inputType="number"
+            android:key="connTimeout"
+            android:singleLine="true"
+            android:title="Connection Timeout" />
+        <androidx.preference.EditTextPreference
+            android:inputType="number"
+            android:key="readTimeout"
+            android:singleLine="true"
+            android:title="Read Timeout" />
+    </androidx.preference.PreferenceCategory>
+    <androidx.preference.PreferenceCategory android:title="Filtri Messaggi">
+
+        <androidx.preference.SwitchPreference
+            android:defaultValue="false"
+            android:key="smsFilter"
+            android:summaryOff="Analizza tutti gli SMS"
+            android:summaryOn="Analizza solo gli SMS filtrati"
+
+            android:title="Filtro SMS" />
+        <androidx.preference.SwitchPreference
+            android:defaultValue="false"
+            android:key="pushFilter"
+            android:summaryOff="Analizza tutte le notifiche push"
+            android:summaryOn="Analizza solo le notifiche push filtrate"
+            android:title="Filtro notifiche PUSH" />
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>
