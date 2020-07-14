@@ -32,7 +32,9 @@
     <string name="PRE_SMS_FILTER">smsFilter</string>
     <string name="PRE_PUSH_FILTER">pushFilter</string>
 
-
+    <!-- CHART  -->
+    <string name="chartSMS">Statistiche messaggi SMS</string>
+    <string name="chartPUSH">Statistiche notifiche PUSH</string>
 
     <string name="action_ok">OK</string>
     <string name="permission_sms_alert_dialog_title">Richiesta permessi SMS</string>

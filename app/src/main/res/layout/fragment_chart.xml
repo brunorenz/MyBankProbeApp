@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="20dp"
+    android:paddingTop="20dp"
+    android:paddingRight="20dp">
+
+    <TextView
+        android:id="@+id/textview_chart1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:text="@string/chartSMS"
+        android:textAlignment="center" />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChartSMS"
+        android:layout_width="match_parent"
+        android:layout_height="350px"></com.github.mikephil.charting.charts.PieChart>
+
+    <TextView
+        android:id="@+id/textview_chart2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:text="@string/chartPUSH"
+        android:textAlignment="center" />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChartPUSH"
+        android:layout_width="match_parent"
+        android:layout_height="350px"></com.github.mikephil.charting.charts.PieChart>
+</androidx.appcompat.widget.LinearLayoutCompat>

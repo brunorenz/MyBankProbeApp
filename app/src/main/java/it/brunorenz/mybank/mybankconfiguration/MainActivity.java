@@ -72,11 +72,10 @@ public class MainActivity extends AppCompatActivity {
         if (!hasNotificationListenerPermission()) {
             showRequestPermissionsInfoAlertDialog("NOTIFY");
         }
-        // app:navGraph="@navigation/nav_graph"
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.nav_host_fragment,new FirstFragment());
-        transaction.addToBackStack(null);
+        transaction.replace(R.id.nav_host_fragment,new MainChartFragment());
+        //transaction.addToBackStack(null);
         transaction.commit();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
