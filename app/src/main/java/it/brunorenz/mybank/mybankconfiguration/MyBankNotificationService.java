@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
@@ -18,6 +17,7 @@ import androidx.preference.PreferenceManager;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
+import it.brunorenz.mybank.mybankconfiguration.utility.MessageStatisticManager;
 
 
 public class MyBankNotificationService extends NotificationListenerService {
@@ -30,10 +30,10 @@ public class MyBankNotificationService extends NotificationListenerService {
 
     private List<String> filter;
 
-    public IBinder onBind(Intent intent) {
-        Log.d(TAG, ">> ON BIND");
-        return super.onBind(intent);
-    }
+//    public IBinder onBind(Intent intent) {
+//        Log.d(TAG, ">> ON BIND");
+//        return super.onBind(intent);
+//    }
 
     public void onCreate() {
         super.onCreate();
@@ -42,30 +42,37 @@ public class MyBankNotificationService extends NotificationListenerService {
     }
 
     public void onNotificationPosted(StatusBarNotification sbn) {
-        Log.d(TAG,"Received PUSH notify "+sbn);
         String packageName = sbn.getPackageName();
+        Log.d(TAG, "Received PUSH notify from " + packageName);
         if (validMessage(packageName)) {
             Log.d(TAG, "id = " + sbn.getId() + "Package Name" + sbn.getPackageName() +
                     "Post time = " + sbn.getPostTime() + "Tag = " + sbn.getTag());
-            //if (!packageName.contains("mybank")) {
             RegisterSMSRequest request = new RegisterSMSRequest();
             request.setType("PUSH");
             request.setSender(sbn.getNotification().extras.getString(Notification.EXTRA_TITLE));
             request.setMessage(sbn.getNotification().extras.getString(Notification.EXTRA_TEXT));
             request.setPackgeName(packageName);
-
             MyBankServerManager server = MyBankServerManager.createMyBankServerManager(this);
             server.registerSMS(request, null, true);
+        } else
+        {
+            MessageStatisticManager stat = new MessageStatisticManager();
+            stat.processMessage(this, "PUSH",false,false);
         }
-
     }
 
+    /**
+     * verifica se messaggio valido
+     *
+     * @param packageName
+     * @return
+     */
     private boolean validMessage(String packageName) {
         if (isFilterEnabled(this) && packageName != null) {
             List<String> filter = getFilter();
             if (filter != null && !filter.isEmpty()) {
                 for (String p : filter) {
-                    Log.d(TAG,"Check packageName "+packageName+" - compare to "+p);
+                    //Log.d(TAG, "Check packageName " + packageName + " - compare to " + p);
                     if (packageName.startsWith(p)) return false;
                 }
             } else
@@ -74,14 +81,22 @@ public class MyBankNotificationService extends NotificationListenerService {
         return true;
     }
 
-    private boolean isFilterEnabled(Context context)
-    {
+    /**
+     * Verifica se filtri messaggi abilitati
+     *
+     * @param context
+     * @return
+     */
+    private boolean isFilterEnabled(Context context) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         boolean filter = pref.getBoolean(context.getString(R.string.PRE_PUSH_FILTER), true);
-        Log.d(TAG,"Enable PUSH filter : "+filter);
+        Log.d(TAG, "Enable PUSH filter : " + filter);
         return filter;
     }
 
+    /**
+     * Gestine evento rilettura filtri da server
+     */
     private void startBroadCastReceiver() {
         final IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE);
@@ -95,16 +110,21 @@ public class MyBankNotificationService extends NotificationListenerService {
                 }
             }
         };
-        Log.d(TAG, ">> REGISTER RECEIVER ..");
+        Log.d(TAG, ">> REGISTER RECEIVER for " + MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE);
         this.registerReceiver(receiver, iFilter);
     }
 
+    /**
+     * Recupera filtri da private storage
+     *
+     * @return
+     */
     private List<String> getFilter() {
         if (filter == null) filter = new ArrayList<>();
         if (filter.isEmpty()) {
             FileManager f = new FileManager(getApplicationContext());
             filter = f.readFile(getApplicationContext().getString(R.string.EXCLUDED_PUSH));
-            Log.d(TAG,"Reads "+filter.size()+" record from PUSH filter");
+            Log.d(TAG, "Reads " + filter.size() + " record from PUSH filter");
         }
         return filter;
     }

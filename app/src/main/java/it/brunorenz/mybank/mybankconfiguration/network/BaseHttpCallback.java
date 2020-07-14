@@ -26,6 +26,10 @@ public abstract class BaseHttpCallback implements Callback {
     private static final String TAG =
             BaseHttpCallback.class.getSimpleName();
 
+    protected Context getContext() {
+        return context;
+    }
+
     protected abstract void onHttpResponse(Call call, Response response) throws IOException;
 
     public BaseHttpCallback(Context context, String intent, IDataContainer dataContainer, boolean sendNotify) {

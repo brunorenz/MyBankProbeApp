@@ -10,15 +10,25 @@ import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSResponse;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegistrationInfo;
 import it.brunorenz.mybank.mybankconfiguration.network.BaseHttpCallback;
 import it.brunorenz.mybank.mybankconfiguration.network.IDataContainer;
+import it.brunorenz.mybank.mybankconfiguration.utility.MessageStatisticManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.RESTUtil;
 import okhttp3.Call;
 import okhttp3.Response;
 
 public class RegisterSMSService extends BaseHttpCallback {
     public final static String TAG = RegisterSMSService.class.getName();
+    private String type;
 
     public RegisterSMSService(Context context, String intent, IDataContainer dataContainer, boolean sendNotify) {
         super(context, intent, dataContainer, sendNotify);
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override
@@ -33,10 +43,15 @@ public class RegisterSMSService extends BaseHttpCallback {
                 RegisterSMSResponse resp = RESTUtil.jsonDeserialize(myResponse, RegisterSMSResponse.class);
                 er = resp.getError();
                 RegistrationInfo ri = resp.getData();
+                boolean accepted = false;
                 if (er.getCode() == 0 && ri != null && ri.isAccepted())
                 {
                     message = "Messaggio emesso da "+ri.getIssuer()+" accettato da MyBank!";
+                    accepted = true;
                 }
+                MessageStatisticManager stat = new MessageStatisticManager();
+                stat.processMessage(getContext(), getType(),true,accepted);
+
             } catch (Exception e) {
                 Log.e(TAG, "Errore chiamata servizio RegisterSMS", e);
             }

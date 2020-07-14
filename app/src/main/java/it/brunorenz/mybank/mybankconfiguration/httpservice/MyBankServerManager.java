@@ -40,7 +40,9 @@ public class MyBankServerManager extends HttpManager {
     public void registerSMS(RegisterSMSRequest request, String intent, boolean notify) {
         String url = createUrl(getContext().getString(R.string.REGISTERSMS));
         try {
-            callHttpPost(url, RESTUtil.jsonSerialize(request), new RegisterSMSService(getContext(), intent, null,true));
+            RegisterSMSService service = new RegisterSMSService(getContext(), intent, null,true);
+            service.setType(request.getType());
+            callHttpPost(url, RESTUtil.jsonSerialize(request), service);
         } catch (Exception e)
         {
             Log.d(TAG,"Errore chiamata servizio "+url,e);

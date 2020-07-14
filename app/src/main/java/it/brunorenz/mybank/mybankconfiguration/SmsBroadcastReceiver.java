@@ -15,6 +15,7 @@ import androidx.preference.PreferenceManager;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
+import it.brunorenz.mybank.mybankconfiguration.utility.MessageStatisticManager;
 
 public class SmsBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG =
@@ -40,6 +41,10 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                 request.setMessage(smsBody.toString());
                 MyBankServerManager server = MyBankServerManager.createMyBankServerManager(context);
                 server.registerSMS(request, null, true);
+            } else
+            {
+                MessageStatisticManager stat = new MessageStatisticManager();
+                stat.processMessage(context, "SMS",false,false);
             }
         } else if (intent.getAction().equals(MyBankIntents.DATA_EXCLUDED_SMS_UPDATE))
         {
