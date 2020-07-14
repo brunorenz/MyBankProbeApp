@@ -1,10 +1,12 @@
 package it.brunorenz.mybank.mybankconfiguration.network;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
+import androidx.preference.PreferenceManager;
 import it.brunorenz.mybank.mybankconfiguration.R;
 import okhttp3.Callback;
 import okhttp3.CipherSuite;
@@ -16,9 +18,9 @@ import okhttp3.RequestBody;
 import okhttp3.TlsVersion;
 
 public class HttpManager {
-    
-    private static final long CONNECT_TIMEOUT = 5000;   // 2 seconds
-    private static final long READ_TIMEOUT = 5000;      // 2 seconds
+
+    private long connectionTimeout;
+    private long readTimeout;
     private static OkHttpClient okHttpClient = null;
     private static final String TAG =
             HttpManager.class.getSimpleName();
@@ -69,8 +71,18 @@ public class HttpManager {
     }
 
     private OkHttpClient buildClient() {
-        if (okHttpClient != null) return okHttpClient;
+        long l[] = getConnectionParameter();
 
+        if (okHttpClient != null) {
+            // check parameter
+            if (l[0] != connectionTimeout || l[1] != readTimeout)
+            {
+                Log.d(TAG,"ReadTimeout o ConnectionTimeout variati ..");
+            }
+            return okHttpClient;
+        }
+        connectionTimeout = l[0];
+        readTimeout = l[1];
         ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
                 .tlsVersions(TlsVersion.TLS_1_2)
 
@@ -79,11 +91,19 @@ public class HttpManager {
                         CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384)
                 .build();
         OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
-                .connectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
-                .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS);
+                .connectTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+                .readTimeout(readTimeout, TimeUnit.MILLISECONDS);
         //.connectionSpecs(Collections.singletonList(spec));
-
         okHttpClient = okHttpClientBuilder.build();
+
         return okHttpClient;
+    }
+
+    private long[] getConnectionParameter() {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        long l[] = new long[2];
+        l[0] = Long.valueOf(pref.getString(context.getString(R.string.PRE_CONN_TIMEOUT), context.getString(R.string.DEF_CONN_TIMEOUT)));
+        l[1] = Long.valueOf(pref.getString(context.getString(R.string.PRE_READ_TIMEOUT), context.getString(R.string.DEF_READ_TIMEOUT)));
+        return l;
     }
 }

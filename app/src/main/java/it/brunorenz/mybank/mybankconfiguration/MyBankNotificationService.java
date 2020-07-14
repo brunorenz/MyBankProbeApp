@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
@@ -13,6 +14,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.preference.PreferenceManager;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
@@ -59,7 +61,7 @@ public class MyBankNotificationService extends NotificationListenerService {
     }
 
     private boolean validMessage(String packageName) {
-        if (packageName != null) {
+        if (isFilterEnabled(this) && packageName != null) {
             List<String> filter = getFilter();
             if (filter != null && !filter.isEmpty()) {
                 for (String p : filter) {
@@ -70,6 +72,14 @@ public class MyBankNotificationService extends NotificationListenerService {
                 for (String p : COMMONAPPS) if (packageName.startsWith(p)) return false;
         }
         return true;
+    }
+
+    private boolean isFilterEnabled(Context context)
+    {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean filter = pref.getBoolean(context.getString(R.string.PRE_PUSH_FILTER), true);
+        Log.d(TAG,"Enable PUSH filter : "+filter);
+        return filter;
     }
 
     private void startBroadCastReceiver() {

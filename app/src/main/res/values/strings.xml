@@ -24,6 +24,16 @@
     <string name="EXCLUDED_SMS">EXCLUDEDSMS.txt"</string>
     <string name="EXCLUDED_PUSH">EXCLUDEDPUSH.txt"</string>
 
+    <!-- Preference-->
+    <string name="PRE_CONN_TIMEOUT">connTimeout</string>
+    <string name="PRE_READ_TIMEOUT">readTimeout</string>
+    <string name="DEF_CONN_TIMEOUT">5000</string>
+    <string name="DEF_READ_TIMEOUT">5000</string>
+    <string name="PRE_SMS_FILTER">smsFilter</string>
+    <string name="PRE_PUSH_FILTER">pushFilter</string>
+
+
+
     <string name="action_ok">OK</string>
     <string name="permission_sms_alert_dialog_title">Richiesta permessi SMS</string>
     <string name="permission_sms_dialog_message">The app will now request your permission to read SMS related services.</string>

@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.nav_host_fragment,new FirstFragment());
-        //transaction.addToBackStack(null);
+        transaction.addToBackStack(null);
         transaction.commit();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.replace(R.id.nav_host_fragment,new SettingFragment());
-            //transaction.addToBackStack(null);
+            transaction.addToBackStack(null);
             transaction.commit();
             return true;
         } else if (id == R.id.refresh_filter) {

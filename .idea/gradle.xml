@@ -10,8 +10,8 @@
         <option name="gradleJvm" value="1.8" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
+            <option value="/dati/home/renzoni/git/MyBankprobeApp" />
+            <option value="/dati/home/renzoni/git/MyBankprobeApp/app" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

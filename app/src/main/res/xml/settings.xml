@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <androidx.preference.PreferenceCategory
         android:layout_width="wrap_content"
@@ -7,27 +8,27 @@
         android:title="Parametri Connessione">
 
         <androidx.preference.EditTextPreference
-            android:inputType="number"
-            android:key="connTimeout"
+            android:defaultValue="@string/DEF_CONN_TIMEOUT"
+            android:key="@string/PRE_CONN_TIMEOUT"
             android:singleLine="true"
-            android:title="Connection Timeout" />
+            android:title="Connection Timeout"
+            app:useSimpleSummaryProvider="true" />
         <androidx.preference.EditTextPreference
-            android:inputType="number"
-            android:key="readTimeout"
+            android:defaultValue="@string/DEF_READ_TIMEOUT"
+            android:key="@string/PRE_READ_TIMEOUT"
             android:singleLine="true"
-            android:title="Read Timeout" />
+            android:title="Read Timeout"
+            app:useSimpleSummaryProvider="true" />
     </androidx.preference.PreferenceCategory>
     <androidx.preference.PreferenceCategory android:title="Filtri Messaggi">
-
         <androidx.preference.SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="smsFilter"
             android:summaryOff="Analizza tutti gli SMS"
             android:summaryOn="Analizza solo gli SMS filtrati"
-
             android:title="Filtro SMS" />
         <androidx.preference.SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="pushFilter"
             android:summaryOff="Analizza tutte le notifiche push"
             android:summaryOn="Analizza solo le notifiche push filtrate"
