@@ -27,7 +27,7 @@
     </fragment>
     <fragment
         android:id="@+id/SettingFragment"
-        android:name="it.brunorenz.mybank.mybankconfiguration.SettingFragment"
+        android:name="it.brunorenz.mybank.mybankconfiguration.fragment.SettingFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second">
 

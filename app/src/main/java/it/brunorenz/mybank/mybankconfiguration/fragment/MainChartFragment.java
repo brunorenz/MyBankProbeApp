@@ -10,14 +10,22 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -30,6 +38,7 @@ public class MainChartFragment extends Fragment {
 
     private PieChart chartSMS;
     private PieChart chartPUSH;
+    private BarChart chart1PUSH;
     private Typeface tf;
 
     @Override
@@ -42,11 +51,14 @@ public class MainChartFragment extends Fragment {
         //tf = Typeface.createFromAsset(getContext().getAssets(), "OpenSans-Regular.ttf");
         chartSMS = v.findViewById(R.id.pieChartSMS);
         chartPUSH = v.findViewById(R.id.pieChartPUSH);
+        chart1PUSH = v.findViewById(R.id.pieChart1PUSH);
 
+        displayBarChart(chart1PUSH,"PUSH");
         displayChart(chartSMS, "SMS");
         displayChart(chartPUSH, "PUSH");
         chartSMS.setData(generatePieData("SMS"));
         chartPUSH.setData(generatePieData("PUSH"));
+        chart1PUSH.setData(generateBarData("PUSH",false));
         return v;
     }
 
@@ -63,6 +75,57 @@ public class MainChartFragment extends Fragment {
                 (RelativeLayout.LayoutParams) chart.getLayoutParams();
         rlParams.setMargins(0, 0, 0, -offset);
         chart.setLayoutParams(rlParams);
+    }
+
+    private void displayBarChart(BarChart chart, String type) {
+        chart.setDragEnabled(false);
+        chart.setPinchZoom(false);
+        chart.setDoubleTapToZoomEnabled(false);
+
+
+        chart.setDrawBarShadow(false);
+        chart.setDrawValueAboveBar(true);
+        chart.getDescription().setEnabled(false);
+
+        // if more than 60 entries are displayed in the chart, no values will be
+        // drawn
+        chart.setMaxVisibleValueCount(60);
+
+
+        chart.setDrawGridBackground(false);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setLabelCount(3);
+        xAxis.setTextSize(10f);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setTextColor(Color.RED);
+        //xAxis.setSpaceTop(80f);
+
+        // data has AxisDependency.LEFT
+        YAxis left = chart.getAxisLeft();
+        left.setTextSize(10f);
+        left.setTextColor(Color.RED);
+        left.setGranularity(1f); //
+        left.setDrawLabels(false); // no axis labels
+        left.setDrawAxisLine(false); // no axis line
+        left.setDrawGridLines(false); // no grid lines
+        left.setDrawZeroLine(true); // draw a zero line
+        chart.getAxisRight().setEnabled(false); // no right axis
+
+        // Legend
+        Legend l = chart.getLegend();
+        l.setFormSize(10f); // set the size of the legend forms/shapes
+        l.setForm(Legend.LegendForm.CIRCLE); // set what type of form/shape should be used
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setDrawInside(false);
+        // space between the legend entries on the y-axis
+        // set custom labels and colors
+        l.setXEntrySpace(5f); // space between the legend entries on the x-axis
+        l.setYEntrySpace(5f);
     }
 
     private void displayChart(PieChart chart, String type) {
@@ -95,7 +158,21 @@ public class MainChartFragment extends Fragment {
         chart.setEntryLabelTextSize(12f);
     }
 
-
+    private BarData generateBarData(String type, boolean today)
+    {
+        boolean sms = type.equals("SMS");
+        MessageStatisticManager stat = new MessageStatisticManager();
+        MessageStatisticInfo info = stat.readData(getContext());
+        MessageStatisticInfoEntry entry = sms ? (today ? info.getSms() : info.getTotSms()): (today ? info.getPush() : info.getTotPush());
+        BarData d = null;
+        List<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(0f, (float) (entry.getTot()-entry.getSent())));
+        entries.add(new BarEntry(1f,  (float) entry.getSent()));
+        entries.add(new BarEntry(2f, (float) entry.getAccepted()));
+        BarDataSet set = new BarDataSet(entries, today ? "Messaggi odierni" : "Messaggi totali");
+        d =  new BarData(set);
+        return d;
+    }
     protected PieData generatePieData(String type) {
 
         boolean sms = type.equals("SMS");
@@ -115,7 +192,7 @@ public class MainChartFragment extends Fragment {
             entries1.add(new PieEntry(a, "Accettati"));
             entries1.add(new PieEntry(s, "Scartati"));
 
-            PieDataSet ds1 = new PieDataSet(entries1, "Messaggi odierrni");
+            PieDataSet ds1 = new PieDataSet(entries1, "Messaggi odierni");
             ds1.setColors(ColorTemplate.VORDIPLOM_COLORS);
             ds1.setSliceSpace(2f);
             ds1.setValueTextColor(Color.WHITE);

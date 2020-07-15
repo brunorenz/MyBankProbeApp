@@ -1,4 +1,4 @@
-package it.brunorenz.mybank.mybankconfiguration;
+package it.brunorenz.mybank.mybankconfiguration.fragment;
 
 import android.os.Bundle;
 import android.text.InputType;
@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import it.brunorenz.mybank.mybankconfiguration.R;
 
 public class SettingFragment extends PreferenceFragmentCompat {
 
