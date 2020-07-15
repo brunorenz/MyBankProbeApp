@@ -36,6 +36,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageFilterData;
+import it.brunorenz.mybank.mybankconfiguration.fragment.MainChartFragment;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
 
@@ -153,8 +154,9 @@ public class MainActivity extends AppCompatActivity {
      * Runtime permission shenanigans
      */
     private boolean hasNotificationListenerPermission() {
-        return ContextCompat.checkSelfPermission(getContext(),
-                Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE) == PackageManager.PERMISSION_GRANTED;
+        return true;
+//        return ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE) == PackageManager.PERMISSION_GRANTED;
     }
 
     private boolean hasReadSmsPermission() {

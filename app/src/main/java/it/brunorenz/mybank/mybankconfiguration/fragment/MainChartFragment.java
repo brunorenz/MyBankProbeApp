@@ -1,11 +1,13 @@
-package it.brunorenz.mybank.mybankconfiguration;
+package it.brunorenz.mybank.mybankconfiguration.fragment;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import it.brunorenz.mybank.mybankconfiguration.R;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfo;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfoEntry;
 import it.brunorenz.mybank.mybankconfiguration.utility.MessageStatisticManager;
@@ -41,9 +44,25 @@ public class MainChartFragment extends Fragment {
         chartPUSH = v.findViewById(R.id.pieChartPUSH);
 
         displayChart(chartSMS, "SMS");
+        displayChart(chartPUSH, "PUSH");
         chartSMS.setData(generatePieData("SMS"));
         chartPUSH.setData(generatePieData("PUSH"));
         return v;
+    }
+
+    private void moveOffScreen(PieChart chart) {
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        //getContext().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        int height = displayMetrics.heightPixels;
+
+        int offset = (int)(height * 0.65); /* percent to move */
+
+        RelativeLayout.LayoutParams rlParams =
+                (RelativeLayout.LayoutParams) chart.getLayoutParams();
+        rlParams.setMargins(0, 0, 0, -offset);
+        chart.setLayoutParams(rlParams);
     }
 
     private void displayChart(PieChart chart, String type) {
@@ -82,27 +101,28 @@ public class MainChartFragment extends Fragment {
         boolean sms = type.equals("SMS");
         MessageStatisticManager stat = new MessageStatisticManager();
         MessageStatisticInfo info = stat.readData(getContext());
-
+        PieData d = null;
 
         int count = 3;
         MessageStatisticInfoEntry entry = sms ? info.getSms() : info.getPush();
-        ArrayList<PieEntry> entries1 = new ArrayList<>();
-        float tot = entry.getAccepted() + entry.getTot();
-        float f = (float) (entry.getTot() - entry.getSent()) / tot * 100;
-        float a = (float) entry.getAccepted() / tot * 100;
-        float s = (float) (entry.getSent() - entry.getAccepted()) / tot * 100;
-        entries1.add(new PieEntry(f, "Filtrati"));
-        entries1.add(new PieEntry(a, "Accettati"));
-        entries1.add(new PieEntry(s, "Scartati"));
+        if (entry.getTot() > 0) {
+            ArrayList<PieEntry> entries1 = new ArrayList<>();
+            float tot = entry.getAccepted() + entry.getTot();
+            float f = (float) (entry.getTot() - entry.getSent()) / tot * 100;
+            float a = (float) entry.getAccepted() / tot * 100;
+            float s = (float) (entry.getSent() - entry.getAccepted()) / tot * 100;
+            entries1.add(new PieEntry(f, "Filtrati"));
+            entries1.add(new PieEntry(a, "Accettati"));
+            entries1.add(new PieEntry(s, "Scartati"));
 
-        PieDataSet ds1 = new PieDataSet(entries1, "Messaggi odierrni");
-        ds1.setColors(ColorTemplate.VORDIPLOM_COLORS);
-        ds1.setSliceSpace(2f);
-        ds1.setValueTextColor(Color.WHITE);
-        ds1.setValueTextSize(12f);
+            PieDataSet ds1 = new PieDataSet(entries1, "Messaggi odierrni");
+            ds1.setColors(ColorTemplate.VORDIPLOM_COLORS);
+            ds1.setSliceSpace(2f);
+            ds1.setValueTextColor(Color.WHITE);
+            ds1.setValueTextSize(12f);
 
-        PieData d = new PieData(ds1);
-
+            d = new PieData(ds1);
+        }
         return d;
     }
 
