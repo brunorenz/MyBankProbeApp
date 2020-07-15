@@ -75,9 +75,12 @@ public class HttpManager {
 
         if (okHttpClient != null) {
             // check parameter
-            if (l[0] != connectionTimeout || l[1] != readTimeout)
-            {
-                Log.d(TAG,"ReadTimeout o ConnectionTimeout variati ..");
+            if (l[0] != connectionTimeout || l[1] != readTimeout) {
+                Log.d(TAG, "ReadTimeout o ConnectionTimeout variati ..");
+                okHttpClient.newBuilder().connectTimeout(l[0], TimeUnit.MILLISECONDS)
+                        .readTimeout(l[1], TimeUnit.MILLISECONDS).build();
+                connectionTimeout = l[0];
+                readTimeout = l[1];
             }
             return okHttpClient;
         }
