@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -77,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.mainPage,new MainChartFragment());
-        //transaction.addToBackStack(null);
         transaction.commit();
 
         Toolbar toolbar = findViewById(R.id.toolbar);

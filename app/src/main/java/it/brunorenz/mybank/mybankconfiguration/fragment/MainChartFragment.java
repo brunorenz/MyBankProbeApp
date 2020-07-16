@@ -23,12 +23,15 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import it.brunorenz.mybank.mybankconfiguration.R;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfo;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfoEntry;
@@ -40,6 +43,7 @@ public class MainChartFragment extends Fragment {
     private PieChart chartPUSH;
     private BarChart chart1PUSH;
     private Typeface tf;
+    private boolean day;
 
     @Override
     public View onCreateView(
@@ -58,7 +62,7 @@ public class MainChartFragment extends Fragment {
         displayChart(chartPUSH, "PUSH");
         chartSMS.setData(generatePieData("SMS"));
         chartPUSH.setData(generatePieData("PUSH"));
-        chart1PUSH.setData(generateBarData("PUSH",false));
+        chart1PUSH.setData(generateBarData("PUSH",day));
         return v;
     }
 
@@ -228,6 +232,28 @@ public class MainChartFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int pos = tab.getPosition();
+                day = pos == 0;
+                chart1PUSH.setData(generateBarData("PUSH",day));
+                chart1PUSH.invalidate();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
 
 //        view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
 //            @Override
