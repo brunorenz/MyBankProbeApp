@@ -76,20 +76,20 @@ public class MainActivity extends AppCompatActivity {
         }
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.nav_host_fragment,new MainChartFragment());
+        transaction.replace(R.id.mainPage,new MainChartFragment());
         //transaction.addToBackStack(null);
         transaction.commit();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
         Log.d(TAG, "Android Version : " + Build.VERSION.SDK_INT);
         Log.d(TAG, "Android KITKAT Version : " + Build.VERSION_CODES.KITKAT);
     }
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(R.id.nav_host_fragment,new SettingFragment());
+            transaction.replace(R.id.mainPage,new SettingFragment());
             transaction.addToBackStack(null);
             transaction.commit();
             return true;
@@ -149,6 +149,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState ..");
     }
 
     /**
