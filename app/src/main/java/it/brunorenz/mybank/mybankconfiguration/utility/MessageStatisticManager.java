@@ -28,8 +28,10 @@ public class MessageStatisticManager {
             }
             if (stat == null) {
                 stat = new MessageStatisticInfo();
-                dummydata(stat,true);
-                dummydata(stat,false);
+                // crea un record vuoto
+                writeData(context,stat);
+                //dummydata(stat,true);
+                //dummydata(stat,false);
             }
         } catch (Exception e) {
             Log.d(TAG, "Errore in aggiornamento file statistiche", e);

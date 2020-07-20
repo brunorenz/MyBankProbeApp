@@ -23,15 +23,20 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.Fill;
 import com.google.android.material.tabs.TabLayout;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import it.brunorenz.mybank.mybankconfiguration.R;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfo;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfoEntry;
@@ -39,8 +44,9 @@ import it.brunorenz.mybank.mybankconfiguration.utility.MessageStatisticManager;
 
 public class MainChartFragment extends Fragment {
 
-    private PieChart chartSMS;
-    private PieChart chartPUSH;
+    //private PieChart chartSMS;
+    //private PieChart chartPUSH;
+    private BarChart chart1SMS;
     private BarChart chart1PUSH;
     private Typeface tf;
     private boolean day;
@@ -50,19 +56,17 @@ public class MainChartFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+        day = true;
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_chart, container, false);
         //tf = Typeface.createFromAsset(getContext().getAssets(), "OpenSans-Regular.ttf");
-        chartSMS = v.findViewById(R.id.pieChartSMS);
-        chartPUSH = v.findViewById(R.id.pieChartPUSH);
+        chart1SMS = v.findViewById(R.id.pieChart1SMS);
+        //chartPUSH = v.findViewById(R.id.pieChartPUSH);
         chart1PUSH = v.findViewById(R.id.pieChart1PUSH);
 
+        displayBarChart(chart1SMS,"SMS");
         displayBarChart(chart1PUSH,"PUSH");
-        displayChart(chartSMS, "SMS");
-        displayChart(chartPUSH, "PUSH");
-        chartSMS.setData(generatePieData("SMS"));
-        chartPUSH.setData(generatePieData("PUSH"));
-        chart1PUSH.setData(generateBarData("PUSH",day));
+        refreshBar(day);
         return v;
     }
 
@@ -162,19 +166,31 @@ public class MainChartFragment extends Fragment {
         chart.setEntryLabelTextSize(12f);
     }
 
-    private BarData generateBarData(String type, boolean today)
+    private BarData generateBarData(MessageStatisticInfo info, String type, boolean today)
     {
         boolean sms = type.equals("SMS");
-        MessageStatisticManager stat = new MessageStatisticManager();
-        MessageStatisticInfo info = stat.readData(getContext());
         MessageStatisticInfoEntry entry = sms ? (today ? info.getSms() : info.getTotSms()): (today ? info.getPush() : info.getTotPush());
-        BarData d = null;
+
         List<BarEntry> entries = new ArrayList<>();
         entries.add(new BarEntry(0f, (float) (entry.getTot()-entry.getSent())));
         entries.add(new BarEntry(1f,  (float) entry.getSent()));
         entries.add(new BarEntry(2f, (float) entry.getAccepted()));
-        BarDataSet set = new BarDataSet(entries, today ? "Messaggi odierni" : "Messaggi totali");
-        d =  new BarData(set);
+        int startColor0 = ContextCompat.getColor(getContext(), android.R.color.holo_red_light);
+        int startColor1 = ContextCompat.getColor(getContext(), android.R.color.holo_orange_light);
+        int startColor2 = ContextCompat.getColor(getContext(), android.R.color.holo_green_light);
+
+        int endColor0 = ContextCompat.getColor(getContext(), android.R.color.holo_red_dark);
+        int endColor1 = ContextCompat.getColor(getContext(), android.R.color.holo_orange_dark);
+        int endColor2 = ContextCompat.getColor(getContext(), android.R.color.holo_green_dark);
+
+        List<Fill> gradientFills = new ArrayList<>();
+        gradientFills.add(new Fill(startColor0, endColor0));
+        gradientFills.add(new Fill(startColor1, endColor1));
+        gradientFills.add(new Fill(startColor2, endColor2));
+
+        BarDataSet set = new BarDataSet(entries, today ? "Messaggi "+type+" odierni" : "Messaggi "+type+" totali");
+        set.setFills(gradientFills);
+        BarData d =  new BarData(set);
         return d;
     }
     protected PieData generatePieData(String type) {
@@ -239,8 +255,7 @@ public class MainChartFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
                 int pos = tab.getPosition();
                 day = pos == 0;
-                chart1PUSH.setData(generateBarData("PUSH",day));
-                chart1PUSH.invalidate();
+                refreshBar(day);
             }
 
             @Override
@@ -253,6 +268,14 @@ public class MainChartFragment extends Fragment {
 
             }
         });
+        final SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout)  view.findViewById(R.id.swiperefresh);
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshBar(day);
+                swipeLayout.setRefreshing(false);
+            }
+        });
 
 
 //        view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
@@ -262,5 +285,24 @@ public class MainChartFragment extends Fragment {
 //                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
 //            }
 //        });
+    }
+
+    private void refreshBar(boolean day)
+    {
+        MessageStatisticManager stat = new MessageStatisticManager();
+        MessageStatisticInfo info = stat.readData(getContext());
+        /*
+                    set1 = (BarDataSet) chart.getData().getDataSetByIndex(0);
+            set1.setValues(values);
+            chart.getData().notifyDataChanged();
+            chart.notifyDataSetChanged();
+
+
+         */
+        chart1PUSH.setData(generateBarData(info,"PUSH",day));
+        chart1SMS.setData(generateBarData(info,"SMS",day));
+        chart1SMS.invalidate();
+        chart1PUSH.invalidate();
+
     }
 }
