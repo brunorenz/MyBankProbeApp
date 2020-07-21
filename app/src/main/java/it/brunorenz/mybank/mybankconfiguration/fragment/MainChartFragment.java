@@ -22,6 +22,10 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
+import com.github.mikephil.charting.formatter.DefaultValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.Fill;
 import com.google.android.material.tabs.TabLayout;
@@ -37,6 +41,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
 import it.brunorenz.mybank.mybankconfiguration.R;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfo;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfoEntry;
@@ -106,25 +111,47 @@ public class MainChartFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1f);
         xAxis.setLabelCount(3);
-        xAxis.setTextSize(10f);
+        xAxis.setTextSize(12f);
         xAxis.setDrawAxisLine(true);
-        xAxis.setTextColor(Color.RED);
+        xAxis.setTextColor(Color.BLUE);
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                String l = "";
+                int i = (int) value;
+                switch (i)
+                {
+                    case 0:
+                        l = "Filtrati";
+                        break;
+                    case 1:
+                        l = "Inviati";
+                        break;
+                    case 2:
+                        l = "Accettati";
+                        break;
+                }
+                return l;
+            }
+        });
+
         //xAxis.setSpaceTop(80f);
 
         // data has AxisDependency.LEFT
         YAxis left = chart.getAxisLeft();
-        left.setTextSize(10f);
+        left.setTextSize(12f);
         left.setTextColor(Color.RED);
         left.setGranularity(1f); //
-        left.setDrawLabels(false); // no axis labels
+        left.setDrawLabels(true); // no axis labels
         left.setDrawAxisLine(false); // no axis line
         left.setDrawGridLines(false); // no grid lines
-        left.setDrawZeroLine(true); // draw a zero line
+        left.setDrawZeroLine(false); // draw a zero line
+        //left.setValueFormatter(new DefaultValueFormatter(0));
         chart.getAxisRight().setEnabled(false); // no right axis
 
         // Legend
         Legend l = chart.getLegend();
-        l.setFormSize(10f); // set the size of the legend forms/shapes
+        l.setFormSize(12f); // set the size of the legend forms/shapes
         l.setForm(Legend.LegendForm.CIRCLE); // set what type of form/shape should be used
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
@@ -132,8 +159,8 @@ public class MainChartFragment extends Fragment {
         l.setDrawInside(false);
         // space between the legend entries on the y-axis
         // set custom labels and colors
-        l.setXEntrySpace(5f); // space between the legend entries on the x-axis
-        l.setYEntrySpace(5f);
+        l.setXEntrySpace(05f); // space between the legend entries on the x-axis
+        l.setYEntrySpace(05f);
     }
 
     private void displayChart(PieChart chart, String type) {
@@ -190,6 +217,8 @@ public class MainChartFragment extends Fragment {
 
         BarDataSet set = new BarDataSet(entries, today ? "Messaggi "+type+" odierni" : "Messaggi "+type+" totali");
         set.setFills(gradientFills);
+        ArrayList<String> xVals = new ArrayList<String>();
+
         BarData d =  new BarData(set);
         return d;
     }
@@ -249,7 +278,9 @@ public class MainChartFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
+        //tabLayout.setupWithViewPager(viewPager);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

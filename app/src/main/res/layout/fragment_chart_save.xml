@@ -18,12 +18,7 @@
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold" />
-        <!--
-                <androidx.viewpager.widget.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/pager"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-        -->
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
@@ -43,9 +38,6 @@
                 android:text="Totali" />
         </com.google.android.material.tabs.TabLayout>
         <!--
-                </androidx.viewpager.widget.ViewPager>
-        -->
-        <!--
             <TextView
                 android:id="@+id/textview_chart1"
                 android:layout_width="match_parent"
@@ -61,39 +53,28 @@
             android:paddingTop="20dp"
             android:layout_height="350px"></com.github.mikephil.charting.charts.PieChart>
         -->
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/pieChart1SMS"
+            android:layout_width="match_parent"
+            android:layout_height="600px"
+            android:paddingTop="20dp"></com.github.mikephil.charting.charts.BarChart>
+        <!--
+            <TextView
+                android:id="@+id/textview_chart2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:text="@string/chartPUSH"
+                android:textAlignment="center" />
+        -->
 
-        <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/pieChart1PUSH"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:weightSum="2"
-            android:paddingBottom="10dp"
-            android:orientation="vertical">
+            android:paddingTop="20dp"></com.github.mikephil.charting.charts.BarChart>
 
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/pieChart1SMS"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="20dp"></com.github.mikephil.charting.charts.BarChart>
-            <!--
-                <TextView
-                    android:id="@+id/textview_chart2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="10dp"
-                    android:text="@string/chartPUSH"
-                    android:textAlignment="center" />
-            -->
-
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/pieChart1PUSH"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="20dp"></com.github.mikephil.charting.charts.BarChart>
-        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
