@@ -46,7 +46,7 @@ public class RegisterSMSService extends BaseHttpCallback {
                 boolean accepted = false;
                 if (er.getCode() == 0 && ri != null && ri.isAccepted())
                 {
-                    message = "Messaggio emesso da "+ri.getIssuer()+" accettato da MyBank!";
+                    message = "Messaggio emesso da "+ri.getBankId()+" di importo "+ri.getImporto()+" euro accettato da MyBank!";
                     accepted = true;
                 }
                 MessageStatisticManager stat = new MessageStatisticManager();
