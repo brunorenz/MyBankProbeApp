@@ -4,14 +4,14 @@ public class RegisterSMSRequest extends BaseRequest {
     private String type;
     private String sender;
     private String message;
-    private String packgeName;
+    private String packageName;
 
-    public String getPackgeName() {
-        return packgeName;
+    public String getPackageName() {
+        return packageName;
     }
 
-    public void setPackgeName(String packgeName) {
-        this.packgeName = packgeName;
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 
     public String getType() {

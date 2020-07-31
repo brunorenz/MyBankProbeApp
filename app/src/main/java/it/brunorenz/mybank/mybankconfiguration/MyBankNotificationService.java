@@ -51,7 +51,7 @@ public class MyBankNotificationService extends NotificationListenerService {
             request.setType("PUSH");
             request.setSender(sbn.getNotification().extras.getString(Notification.EXTRA_TITLE));
             request.setMessage(sbn.getNotification().extras.getString(Notification.EXTRA_TEXT));
-            request.setPackgeName(packageName);
+            request.setPackageName(packageName);
             MyBankServerManager server = MyBankServerManager.createMyBankServerManager(this);
             server.registerSMS(request, null, true);
         } else
