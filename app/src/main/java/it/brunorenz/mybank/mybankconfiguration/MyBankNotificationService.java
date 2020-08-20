@@ -6,14 +6,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import androidx.preference.PreferenceManager;
+import io.sentry.core.Sentry;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
@@ -45,19 +49,37 @@ public class MyBankNotificationService extends NotificationListenerService {
         String packageName = sbn.getPackageName();
         Log.d(TAG, "Received PUSH notify from " + packageName);
         if (validMessage(packageName)) {
-            Log.d(TAG, "id = " + sbn.getId() + "Package Name" + sbn.getPackageName() +
-                    "Post time = " + sbn.getPostTime() + "Tag = " + sbn.getTag());
+            String msg = "id = " + sbn.getId() + "Package Name" + sbn.getPackageName() +
+                    "Post time = " + sbn.getPostTime() + "Tag = " + sbn.getTag();
+            Log.d(TAG, msg);
+
             RegisterSMSRequest request = new RegisterSMSRequest();
             request.setType("PUSH");
-            request.setSender(sbn.getNotification().extras.getString(Notification.EXTRA_TITLE));
-            request.setMessage(sbn.getNotification().extras.getString(Notification.EXTRA_TEXT));
+            Bundle extras = sbn.getNotification().extras;
+            request.setSender(extras.getString(Notification.EXTRA_TITLE));
+            String extraText = extras.getString(Notification.EXTRA_TEXT);
+            String extraBigText = extras.getString(Notification.EXTRA_BIG_TEXT);
+            Parcelable b[] = (Parcelable[]) extras.get(Notification.EXTRA_MESSAGES);
+            String extraMessages = "";
+            if (b != null) {
+                for (Parcelable tmp : b) {
+                    Bundle msgBundle = (Bundle) tmp;
+                    extraMessages = extraMessages + msgBundle.getString("text") + "\n";
+                }
+            }
+            String keys = "";
+            Set<String> io = extras.keySet();
+            for (String key : io) keys = key + " - " + keys;
+            String ex = String.format("Text : %s\nBigText : %s\nMessages : %s\nKeys : %s", extraText, extraBigText, extraMessages, keys);
+            Log.d(TAG, "PUSH : " + ex);
+            Sentry.captureException(new Exception("PUSH : " + ex));
+            request.setMessage(extraText);
             request.setPackageName(packageName);
             MyBankServerManager server = MyBankServerManager.createMyBankServerManager(this);
             server.registerSMS(request, null, true);
-        } else
-        {
+        } else {
             MessageStatisticManager stat = new MessageStatisticManager();
-            stat.processMessage(this, "PUSH",false,false);
+            stat.processMessage(this, "PUSH", false, false);
         }
     }
 

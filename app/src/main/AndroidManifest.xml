@@ -51,6 +51,7 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+        <meta-data android:name="io.sentry.dsn" android:value="https://75fe9c917d6448b4859feeb73f31dad5@o436853.ingest.sentry.io/5398566" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

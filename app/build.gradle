@@ -4,6 +4,12 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.0"
 
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "it.brunorenz.mybank.mybankconfiguration"
         minSdkVersion 23
@@ -39,4 +45,5 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-core:2.11.1'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.11.1'
     implementation 'com.squareup.okhttp3:okhttp:4.8.0'
+    implementation 'io.sentry:sentry-android:2.3.0'
 }

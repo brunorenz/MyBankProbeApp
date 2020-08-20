@@ -18,12 +18,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -77,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         }
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.mainPage,new MainChartFragment());
+        transaction.replace(R.id.mainPage, new MainChartFragment());
         transaction.commit();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -136,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             FragmentManager manager = getSupportFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
-            transaction.replace(R.id.mainPage,new SettingFragment());
+            transaction.replace(R.id.mainPage, new SettingFragment());
             transaction.addToBackStack(null);
             transaction.commit();
             return true;
@@ -161,6 +156,10 @@ public class MainActivity extends AppCompatActivity {
      * Runtime permission shenanigans
      */
     private boolean hasNotificationListenerPermission() {
+//        ComponentName cn = new ComponentName(this, NotificationListenerService.class);
+//        String flat = Settings.Secure.getString(this.getContentResolver(), "enabled_notification_listeners");
+//        final boolean enabled = flat != null && flat.contains(cn.flattenToString());
+//        return enabled;
         return true;
 //        return ContextCompat.checkSelfPermission(this,
 //                Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE) == PackageManager.PERMISSION_GRANTED;
@@ -300,8 +299,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    protected Context getContext()
-    {
+    protected Context getContext() {
         return this;
     }
 }

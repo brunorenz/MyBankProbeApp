@@ -24,7 +24,9 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
     public SmsBroadcastReceiver() {
         Log.d(TAG, "Register " + TAG);
     }
+
     private List<String> filter;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         String smsSender = "";
@@ -34,33 +36,32 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
                 smsSender = smsMessage.getDisplayOriginatingAddress();
                 smsBody.append(smsMessage.getMessageBody());
             }
-            if (validMessage(smsSender,context)) {
+            if (validMessage(smsSender, context)) {
                 RegisterSMSRequest request = new RegisterSMSRequest();
                 request.setType("SMS");
                 request.setSender(smsSender);
                 request.setMessage(smsBody.toString());
+                //Sentry.captureException(new Exception("SMS : "+request.getMessage()));
                 MyBankServerManager server = MyBankServerManager.createMyBankServerManager(context);
                 server.registerSMS(request, null, true);
-            } else
-            {
+            } else {
                 MessageStatisticManager stat = new MessageStatisticManager();
-                stat.processMessage(context, "SMS",false,false);
+                stat.processMessage(context, "SMS", false, false);
             }
-        } else if (intent.getAction().equals(MyBankIntents.DATA_EXCLUDED_SMS_UPDATE))
-        {
-            Log.d(TAG,"Update SMS filter!");
+        } else if (intent.getAction().equals(MyBankIntents.DATA_EXCLUDED_SMS_UPDATE)) {
+            Log.d(TAG, "Update SMS filter!");
             filter = null;
             getFilter(context);
         }
 
     }
 
-    private boolean validMessage(String sender,Context context) {
+    private boolean validMessage(String sender, Context context) {
         if (isFilterEnabled(context) && sender != null) {
             List<String> filter = getFilter(context);
             if (filter != null && !filter.isEmpty()) {
                 for (String p : filter) {
-                    Log.d(TAG,"Check sender "+sender+" - compare to "+p);
+                    Log.d(TAG, "Check sender " + sender + " - compare to " + p);
                     if (sender.startsWith(p)) return false;
                 }
             }
@@ -73,16 +74,15 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
         if (filter.isEmpty()) {
             FileManager f = new FileManager(context);
             filter = f.readFile(context.getString(R.string.EXCLUDED_SMS));
-            Log.d(TAG,"Reads "+filter.size()+" record from SMS filter");
+            Log.d(TAG, "Reads " + filter.size() + " record from SMS filter");
         }
         return filter;
     }
 
-    private boolean isFilterEnabled(Context context)
-    {
+    private boolean isFilterEnabled(Context context) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         boolean filter = pref.getBoolean(context.getString(R.string.PRE_SMS_FILTER), true);
-        Log.d(TAG,"Enable SMS filter : "+filter);
+        Log.d(TAG, "Enable SMS filter : " + filter);
         return filter;
     }
 }
