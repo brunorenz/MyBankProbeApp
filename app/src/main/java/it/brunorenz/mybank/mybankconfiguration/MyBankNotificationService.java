@@ -59,6 +59,7 @@ public class MyBankNotificationService extends NotificationListenerService {
             request.setSender(extras.getString(Notification.EXTRA_TITLE));
             String extraText = extras.getString(Notification.EXTRA_TEXT);
             String extraBigText = extras.getString(Notification.EXTRA_BIG_TEXT);
+            String extraSubText = extras.getString(Notification.EXTRA_SUB_TEXT);
             Parcelable b[] = (Parcelable[]) extras.get(Notification.EXTRA_MESSAGES);
             String extraMessages = "";
             if (b != null) {
@@ -70,7 +71,7 @@ public class MyBankNotificationService extends NotificationListenerService {
             String keys = "";
             Set<String> io = extras.keySet();
             for (String key : io) keys = key + " - " + keys;
-            String ex = String.format("Text : %s\nBigText : %s\nMessages : %s\nKeys : %s", extraText, extraBigText, extraMessages, keys);
+            String ex = String.format("Subtext : %s\nText : %s\nBigText : %s\nMessages : %s\nKeys : %s", extraSubText,extraText, extraBigText, extraMessages, keys);
             Log.d(TAG, "PUSH : " + ex);
             Sentry.captureException(new Exception("PUSH : " + ex));
             request.setMessage(extraText);
