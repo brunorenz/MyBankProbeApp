@@ -108,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
             startService(i);
         }
         //
-        myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_SMS_MESSAGE, "SMS", null);
-        myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE, "PUSH", null);
+        myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_SMS_MESSAGE, "SMS");
+        myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE, "PUSH");
 
     }
 
@@ -136,8 +136,8 @@ public class MainActivity extends AppCompatActivity {
             transaction.commit();
             return true;
         } else if (id == R.id.refresh_filter) {
-            myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_SMS_MESSAGE, "SMS", null);
-            myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE, "PUSH", null);
+            myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_SMS_MESSAGE, "SMS");
+            myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE, "PUSH");
             Toast.makeText(this, "Aggiornamento effettuato", Toast.LENGTH_LONG).show();
             return true;
         }

@@ -40,7 +40,9 @@ public class MyBankServerManager extends HttpManager {
     public void registerSMS(RegisterSMSRequest request, String intent, boolean notify) {
         String url = createUrl(getContext().getString(R.string.REGISTERSMS));
         try {
-            RegisterSMSService service = new RegisterSMSService(getContext(), intent, null,true);
+            GenericDataContainer dataContainer = new GenericDataContainer();
+            dataContainer.setBaseRequest(request);
+            RegisterSMSService service = new RegisterSMSService(getContext(), intent, dataContainer,true);
             service.setType(request.getType());
             callHttpPost(url, RESTUtil.jsonSerialize(request), service);
         } catch (Exception e)
@@ -50,12 +52,12 @@ public class MyBankServerManager extends HttpManager {
 
     }
 
-    public void getMessageFilter(String intent, String type , IDataContainer dataContainer) {
+    public void getMessageFilter(String intent, String type) {
         String url = createUrl(getContext().getString(R.string.GETEXLNOTY));
         if (type != null) url = url + "?type="+type;
         try {
-            if (dataContainer == null) dataContainer = new GenericDataContainer();
-            callHttpGet(url,  new GetMessageFilterService(getContext(), intent, dataContainer,false));
+            //if (dataContainer == null) dataContainer = new GenericDataContainer();
+            callHttpGet(url,  new GetMessageFilterService(getContext(), intent, new GenericDataContainer(),false));
         } catch (Exception e)
         {
             Log.d(TAG,"Errore chiamata servizio "+url,e);
