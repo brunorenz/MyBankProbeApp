@@ -32,6 +32,13 @@ public abstract class BaseHttpCallback implements Callback {
 
     protected abstract void onHttpResponse(Call call, Response response) throws IOException;
 
+    protected void onHttpFailure(Call call, IOException e)
+    {
+        Log.d(TAG, "Failed !!", e);
+        Error er = new Error();
+        er.setCode(999);
+        sendNotification(er, "MyBank error : " + e.getMessage());
+    }
     public BaseHttpCallback(Context context, String intent, IDataContainer dataContainer, boolean sendNotify) {
         this.context = context;
         this.intent = intent;
@@ -49,10 +56,7 @@ public abstract class BaseHttpCallback implements Callback {
 
     @Override
     public void onFailure(Call call, IOException e) {
-        Log.d(TAG, "Failed !!", e);
-        Error er = new Error();
-        er.setCode(999);
-        sendNotification(er, "MyBank error : " + e.getMessage());
+        onHttpFailure(call,e);
     }
 
     @Override

@@ -5,7 +5,10 @@ import android.util.Log;
 
 import java.io.IOException;
 
+import it.brunorenz.mybank.mybankconfiguration.bean.BaseRequest;
 import it.brunorenz.mybank.mybankconfiguration.bean.Error;
+import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
+import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSResponse;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegistrationInfo;
 import it.brunorenz.mybank.mybankconfiguration.network.BaseHttpCallback;
@@ -29,6 +32,28 @@ public class RegisterSMSService extends BaseHttpCallback {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    protected void onHttpFailure(Call call, IOException e) {
+        IDataContainer dc = getDataContainer();
+        if (dc != null && dc instanceof GenericDataContainer)
+        {
+            BaseRequest req  = ((GenericDataContainer) dc).getBaseRequest();
+            if (req != null && req instanceof RegisterSMSRequest)
+            {
+                try {
+                    String jsonRequest =  RESTUtil.jsonSerialize( (RegisterSMSRequest) req);
+                    Log.d(TAG, "Request da salvare : "+jsonRequest);
+                } catch (Exception ex)
+                {
+                    Log.e(TAG, "Errore serializzazione Request", ex);
+                }
+
+            }
+        }
+
+        super.onHttpFailure(call, e);
     }
 
     @Override
