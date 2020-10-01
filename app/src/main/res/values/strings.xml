@@ -14,8 +14,8 @@
 
     <!--  MyBank Resources -->
     <string name="MYBANKSEVER">https://mybank.65bruno.it/mybank/rest/</string>
-    <string name="REGISTERSMS">registerSMS</string>
-    <string name="GETEXLNOTY">getMessageFilter</string>
+    <string name="REGISTERSMS">p/registerSMS</string>
+    <string name="GETEXLNOTY">g/getMessageFilter</string>
 
     <string name="BASICAUTH">Basic YWRtaW46YWgwNjB2eUEu</string>
 

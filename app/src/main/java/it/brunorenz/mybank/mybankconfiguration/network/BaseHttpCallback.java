@@ -53,7 +53,6 @@ public abstract class BaseHttpCallback implements Callback {
         Error er = new Error();
         er.setCode(999);
         sendNotification(er, "MyBank error : " + e.getMessage());
-        //call.cancel();
     }
 
     @Override
