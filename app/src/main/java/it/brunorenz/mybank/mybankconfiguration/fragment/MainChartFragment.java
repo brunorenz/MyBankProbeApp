@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,13 +56,19 @@ public class MainChartFragment extends Fragment {
     private BarChart chart1PUSH;
     private Typeface tf;
     private boolean day;
+    private static final String TAG =
+            MainChartFragment.class.getSimpleName();
+
+    public void setDay(boolean day) {
+        this.day = day;
+    }
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        day = true;
+        //day = true;
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_chart, container, false);
         //tf = Typeface.createFromAsset(getContext().getAssets(), "OpenSans-Regular.ttf");
@@ -72,6 +79,7 @@ public class MainChartFragment extends Fragment {
         displayBarChart(chart1SMS,"SMS");
         displayBarChart(chart1PUSH,"PUSH");
         refreshBar(day);
+        Log.d(TAG,"Creato grafico tipo day = "+day);
         return v;
     }
 
@@ -275,7 +283,7 @@ public class MainChartFragment extends Fragment {
         return d;
     }
 
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+    public void onViewCreatedX(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         //ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
@@ -320,16 +328,9 @@ public class MainChartFragment extends Fragment {
 
     private void refreshBar(boolean day)
     {
+        Log.d(TAG,"Refresh statistic for day = "+day);
         MessageStatisticManager stat = new MessageStatisticManager();
         MessageStatisticInfo info = stat.readData(getContext());
-        /*
-                    set1 = (BarDataSet) chart.getData().getDataSetByIndex(0);
-            set1.setValues(values);
-            chart.getData().notifyDataChanged();
-            chart.notifyDataSetChanged();
-
-
-         */
         chart1PUSH.setData(generateBarData(info,"PUSH",day));
         chart1SMS.setData(generateBarData(info,"SMS",day));
         chart1SMS.invalidate();

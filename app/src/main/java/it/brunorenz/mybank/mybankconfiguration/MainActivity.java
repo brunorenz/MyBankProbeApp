@@ -33,6 +33,7 @@ import androidx.fragment.app.FragmentTransaction;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageFilterData;
 import it.brunorenz.mybank.mybankconfiguration.fragment.MainChartFragment;
+import it.brunorenz.mybank.mybankconfiguration.fragment.MainFragment;
 import it.brunorenz.mybank.mybankconfiguration.fragment.SettingFragment;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         }
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.mainPage, new MainChartFragment());
+        transaction.replace(R.id.mainPage, new MainFragment());
         transaction.commit();
 
         Toolbar toolbar = findViewById(R.id.toolbar);

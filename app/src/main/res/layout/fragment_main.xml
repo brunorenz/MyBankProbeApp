@@ -62,39 +62,13 @@
             android:paddingTop="20dp"
             android:layout_height="350px"></com.github.mikephil.charting.charts.PieChart>
         -->
-
-        <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:weightSum="2"
-            android:paddingBottom="10dp"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
 
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/pieChart1SMS"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="20dp"></com.github.mikephil.charting.charts.BarChart>
-            <!--
-                <TextView
-                    android:id="@+id/textview_chart2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="10dp"
-                    android:text="@string/chartPUSH"
-                    android:textAlignment="center" />
-            -->
-
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/pieChart1PUSH"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="20dp"></com.github.mikephil.charting.charts.BarChart>
-        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
