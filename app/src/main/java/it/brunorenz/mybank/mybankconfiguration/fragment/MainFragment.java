@@ -1,5 +1,6 @@
 package it.brunorenz.mybank.mybankconfiguration.fragment;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
+
+import java.io.Serializable;
+
 import it.brunorenz.mybank.mybankconfiguration.R;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfo;
 import it.brunorenz.mybank.mybankconfiguration.utility.MessageStatisticManager;
@@ -59,14 +63,15 @@ public class MainFragment extends Fragment {
                         //refreshBar(day);
                     }
                 }).attach();
-
-
+        /*
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                /*
                 int pos = tab.getPosition();
                 day = pos == 0;
                 refreshBar(day);
+                 *
             }
 
             @Override
@@ -87,21 +92,14 @@ public class MainFragment extends Fragment {
                 swipeLayout.setRefreshing(false);
             }
         });
-
-
-//        view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                NavHostFragment.findNavController(MainChartFragment.this)
-//                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
-//            }
-//        });
+        */
     }
 
     private void refreshBar(boolean day)
     {
-        MessageStatisticManager stat = new MessageStatisticManager();
-        MessageStatisticInfo info = stat.readData(getContext());
-        Log.d(TAG,"Statistics for day : "+day);
+        Intent i = new Intent("UPDATETAB"+(day ? "_DAY":"_TOT"));
+        Log.d(TAG,"Send Broadcast "+i.getAction());
+        //getContext().sendBroadcast(i);
+
     }
 }

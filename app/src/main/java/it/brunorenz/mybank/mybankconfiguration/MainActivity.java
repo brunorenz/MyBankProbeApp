@@ -30,6 +30,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageFilterData;
 import it.brunorenz.mybank.mybankconfiguration.fragment.MainChartFragment;
@@ -142,8 +143,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Aggiornamento effettuato", Toast.LENGTH_LONG).show();
             return true;
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 

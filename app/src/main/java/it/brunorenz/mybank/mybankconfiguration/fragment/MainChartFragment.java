@@ -1,5 +1,8 @@
 package it.brunorenz.mybank.mybankconfiguration.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -43,6 +46,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
+
 import it.brunorenz.mybank.mybankconfiguration.R;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfo;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfoEntry;
@@ -64,6 +68,17 @@ public class MainChartFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d(TAG,"MainChartFragment intent -> "+intent.getAction());
+            }
+        };
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
@@ -76,10 +91,21 @@ public class MainChartFragment extends Fragment {
         //chartPUSH = v.findViewById(R.id.pieChartPUSH);
         chart1PUSH = v.findViewById(R.id.pieChart1PUSH);
 
-        displayBarChart(chart1SMS,"SMS");
-        displayBarChart(chart1PUSH,"PUSH");
+        displayBarChart(chart1SMS, "SMS");
+        displayBarChart(chart1PUSH, "PUSH");
         refreshBar(day);
-        Log.d(TAG,"Creato grafico tipo day = "+day);
+        Log.d(TAG, "Creato grafico tipo day = " + day);
+
+        final SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout)  v.findViewById(R.id.swiperefresh);
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshBar(day);
+                swipeLayout.setRefreshing(false);
+            }
+        });
+
+
         return v;
     }
 
@@ -90,7 +116,7 @@ public class MainChartFragment extends Fragment {
 
         int height = displayMetrics.heightPixels;
 
-        int offset = (int)(height * 0.65); /* percent to move */
+        int offset = (int) (height * 0.65); /* percent to move */
 
         RelativeLayout.LayoutParams rlParams =
                 (RelativeLayout.LayoutParams) chart.getLayoutParams();
@@ -127,8 +153,7 @@ public class MainChartFragment extends Fragment {
             public String getFormattedValue(float value) {
                 String l = "";
                 int i = (int) value;
-                switch (i)
-                {
+                switch (i) {
                     case 0:
                         l = "Filtrati";
                         break;
@@ -201,14 +226,13 @@ public class MainChartFragment extends Fragment {
         chart.setEntryLabelTextSize(12f);
     }
 
-    private BarData generateBarData(MessageStatisticInfo info, String type, boolean today)
-    {
+    private BarData generateBarData(MessageStatisticInfo info, String type, boolean today) {
         boolean sms = type.equals("SMS");
-        MessageStatisticInfoEntry entry = sms ? (today ? info.getSms() : info.getTotSms()): (today ? info.getPush() : info.getTotPush());
+        MessageStatisticInfoEntry entry = sms ? (today ? info.getSms() : info.getTotSms()) : (today ? info.getPush() : info.getTotPush());
 
         List<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0f, (float) (entry.getTot()-entry.getSent())));
-        entries.add(new BarEntry(1f,  (float) entry.getSent()));
+        entries.add(new BarEntry(0f, (float) (entry.getTot() - entry.getSent())));
+        entries.add(new BarEntry(1f, (float) entry.getSent()));
         entries.add(new BarEntry(2f, (float) entry.getAccepted()));
         int startColor0 = ContextCompat.getColor(getContext(), android.R.color.holo_red_light);
         int startColor1 = ContextCompat.getColor(getContext(), android.R.color.holo_orange_light);
@@ -223,13 +247,14 @@ public class MainChartFragment extends Fragment {
         gradientFills.add(new Fill(startColor1, endColor1));
         gradientFills.add(new Fill(startColor2, endColor2));
 
-        BarDataSet set = new BarDataSet(entries, today ? "Messaggi "+type+" odierni" : "Messaggi "+type+" totali");
+        BarDataSet set = new BarDataSet(entries, today ? "Messaggi " + type + " odierni" : "Messaggi " + type + " totali");
         set.setFills(gradientFills);
         ArrayList<String> xVals = new ArrayList<String>();
 
-        BarData d =  new BarData(set);
+        BarData d = new BarData(set);
         return d;
     }
+
     protected PieData generatePieData(String type) {
 
         boolean sms = type.equals("SMS");
@@ -283,56 +308,12 @@ public class MainChartFragment extends Fragment {
         return d;
     }
 
-    public void onViewCreatedX(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        //ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
-        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
-        //tabLayout.setupWithViewPager(viewPager);
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                int pos = tab.getPosition();
-                day = pos == 0;
-                refreshBar(day);
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-        final SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout)  view.findViewById(R.id.swiperefresh);
-        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshBar(day);
-                swipeLayout.setRefreshing(false);
-            }
-        });
-
-
-//        view.findViewById(R.id.button_first).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                NavHostFragment.findNavController(MainChartFragment.this)
-//                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
-//            }
-//        });
-    }
-
-    private void refreshBar(boolean day)
-    {
-        Log.d(TAG,"Refresh statistic for day = "+day);
+    private void refreshBar(boolean day) {
+        Log.d(TAG, "Refresh statistic for day = " + day);
         MessageStatisticManager stat = new MessageStatisticManager();
         MessageStatisticInfo info = stat.readData(getContext());
-        chart1PUSH.setData(generateBarData(info,"PUSH",day));
-        chart1SMS.setData(generateBarData(info,"SMS",day));
+        chart1PUSH.setData(generateBarData(info, "PUSH", day));
+        chart1SMS.setData(generateBarData(info, "SMS", day));
         chart1SMS.invalidate();
         chart1PUSH.invalidate();
 

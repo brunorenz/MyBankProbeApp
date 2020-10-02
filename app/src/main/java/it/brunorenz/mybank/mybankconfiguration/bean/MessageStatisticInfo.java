@@ -2,6 +2,7 @@ package it.brunorenz.mybank.mybankconfiguration.bean;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class MessageStatisticInfo {
     String currentDate;
@@ -23,7 +24,7 @@ public class MessageStatisticInfo {
 
     private String _getCurrentDate()
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-YYYY");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ITALY);
         return sdf.format(new Date());
     }
 

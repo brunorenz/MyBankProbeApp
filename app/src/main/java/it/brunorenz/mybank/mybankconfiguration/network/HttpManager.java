@@ -97,6 +97,7 @@ public class HttpManager {
                 .connectTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
                 .readTimeout(readTimeout, TimeUnit.MILLISECONDS);
         //.connectionSpecs(Collections.singletonList(spec));
+        okHttpClientBuilder.cookieJar(new MyBankCookieJar());
         okHttpClient = okHttpClientBuilder.build();
 
         return okHttpClient;

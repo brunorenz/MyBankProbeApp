@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.preference.PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="Parametri Connessione">
+        android:title="Dati Utente">
+        <androidx.preference.EditTextPreference
+            android:key="@string/PRE_LOGON_EMAIL"
+            android:singleLine="true"
+            android:title="Indirizzo email"
+            android:dialogMessage="Inserisci la tua email"
+            app:useSimpleSummaryProvider="true" />
+        <it.brunorenz.mybank.mybankconfiguration.fragment.ButtonLogonPasswordPreference
+            android:key="@string/PRE_LOGON_PWD"
+            android:singleLine="true"
+            android:title="Password"
+            android:dialogMessage="Inserisci la tua password"
+            android:widgetLayout="@layout/logon_button"
+            app:useSimpleSummaryProvider="true" />
+    </androidx.preference.PreferenceCategory>
 
+    <androidx.preference.PreferenceCategory android:title="Parametri Connessione">
         <androidx.preference.EditTextPreference
             android:defaultValue="@string/DEF_CONN_TIMEOUT"
             android:key="@string/PRE_CONN_TIMEOUT"

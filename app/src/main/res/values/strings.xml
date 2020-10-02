@@ -13,9 +13,11 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <!--  MyBank Resources -->
-    <string name="MYBANKSEVER">https://mybank.65bruno.it/mybank/rest/</string>
-    <string name="REGISTERSMS">p/registerSMS</string>
-    <string name="GETEXLNOTY">g/getMessageFilter</string>
+    <string name="MYBANKSERVER">https://mybank.65bruno.it/mybank/rest/</string>
+    <string name="SECURITYSERVER">https://mybank.65bruno.it/security/rest/</string>
+    <string name="SVC_LOGON">p/login</string>
+    <string name="SVC_REGISTERSMS">p/registerSMS</string>
+    <string name="SVC_GETEXLNOTY">g/getMessageFilter</string>
 
     <string name="BASICAUTH">Basic YWRtaW46YWgwNjB2eUEu</string>
 
@@ -25,12 +27,16 @@
     <string name="EXCLUDED_PUSH">EXCLUDEDPUSH.txt"</string>
 
     <!-- Preference-->
+    <string name="PRE_LOGON_EMAIL">email</string>
+    <string name="PRE_LOGON_PWD">password</string>
     <string name="PRE_CONN_TIMEOUT">connTimeout</string>
     <string name="PRE_READ_TIMEOUT">readTimeout</string>
     <string name="DEF_CONN_TIMEOUT">5000</string>
     <string name="DEF_READ_TIMEOUT">5000</string>
     <string name="PRE_SMS_FILTER">smsFilter</string>
     <string name="PRE_PUSH_FILTER">pushFilter</string>
+    <string name="LOGON_BUTTON">Logon</string>
+
 
     <!-- CHART  -->
     <string name="chartSMS">Statistiche messaggi SMS</string>
