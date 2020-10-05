@@ -23,10 +23,12 @@ import android.widget.Toast;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -158,13 +160,10 @@ public class MainActivity extends AppCompatActivity {
      * Runtime permission shenanigans
      */
     private boolean hasNotificationListenerPermission() {
-//        ComponentName cn = new ComponentName(this, NotificationListenerService.class);
-//        String flat = Settings.Secure.getString(this.getContentResolver(), "enabled_notification_listeners");
-//        final boolean enabled = flat != null && flat.contains(cn.flattenToString());
-//        return enabled;
-        return true;
-//        return ContextCompat.checkSelfPermission(this,
-//                Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE) == PackageManager.PERMISSION_GRANTED;
+        Set<String> lst =NotificationManagerCompat.getEnabledListenerPackages(getContext());
+        for (String s : lst)
+            if (s.contains("mybankconfiguration")) return true;
+        return false;
     }
 
     private boolean hasReadSmsPermission() {
