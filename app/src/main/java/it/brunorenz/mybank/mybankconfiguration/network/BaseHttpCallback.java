@@ -61,8 +61,16 @@ public abstract class BaseHttpCallback implements Callback {
 
     @Override
     public void onResponse(Call call, Response response) throws IOException {
-        onHttpResponse(call, response);
 
+        try {
+            onHttpResponse(call, response);
+        } catch (Exception e)
+        {
+            Log.e(TAG,"Errore gestione httpRespone",e);
+        } finally {
+            if (response != null)
+            response.close();
+        }
     }
 
     protected void sendNotification(Error errore, String _message) {

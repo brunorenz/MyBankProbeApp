@@ -98,10 +98,12 @@ public class MainActivity extends AppCompatActivity {
     private void initApplication() {
         // Create notification channel
         createNotificationChannel();
-        // create ServerManager
-        myBankServer = MyBankServerManager.createMyBankServerManager(getContext());
         // create Broadcast receiver
         registerMainActivityBroadcastReceiver();
+        // create ServerManager
+        myBankServer = MyBankServerManager.createMyBankServerManager(getContext());
+        // do logon
+        myBankServer.logon(null,MyBankIntents.DATA_LOGON_RESPONSE);
         // start service
         Intent i = new Intent(this, MyBankSMSService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -272,6 +274,13 @@ public class MainActivity extends AppCompatActivity {
                             sendBroadCast(sms ? MyBankIntents.DATA_EXCLUDED_SMS_UPDATE : MyBankIntents.DATA_EXCLUDED_PUSH_UPDATE, null);
                         }
                     }
+                } else if (intent.getAction().equals(MyBankIntents.DATA_LOGON_RESPONSE))
+                {
+                    GenericDataContainer gc = (GenericDataContainer) intent.getSerializableExtra("DATI");
+                    if (gc != null)
+                    {
+                        Log.d(TAG, "Update Logon info .. logon : "+gc.isLogonOk());
+                    }
                 }
             }
         };
@@ -286,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE);
         intentFilter.addAction(MyBankIntents.DATA_EXCLUDED_SMS_MESSAGE);
+        intentFilter.addAction(MyBankIntents.DATA_LOGON_RESPONSE);
         registerReceiver(dataUpdateReceiver, intentFilter);
     }
 

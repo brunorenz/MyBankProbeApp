@@ -7,7 +7,7 @@ import it.brunorenz.mybank.mybankconfiguration.network.IDataContainer;
 
 public class GenericDataContainer implements IDataContainer {
     private List<MessageFilterData> excludedPackage;
-
+    private boolean logonOk;
     private BaseRequest baseRequest;
 
     public List<MessageFilterData> getMessageFilter() {
@@ -22,4 +22,13 @@ public class GenericDataContainer implements IDataContainer {
     public BaseRequest getBaseRequest() {
         return baseRequest;
     }
+
+    public boolean isLogonOk() {
+        return logonOk;
+    }
+
+    public void setLogonOk(boolean logonOk) {
+        this.logonOk = logonOk;
+    }
+
 }

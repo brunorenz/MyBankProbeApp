@@ -69,20 +69,36 @@
 
         </androidx.viewpager2.widget.ViewPager2>
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/button1"
-                android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
+            <ImageButton
+                android:id="@+id/buttonAmex"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="Button" />
+                android:background="#FFF"
+                android:paddingHorizontal="10dp"
+                android:src="@drawable/ic_iconfinder_payment_method_american_express_card_206682"
+                />
+            <ImageButton
+                android:id="@+id/buttonMC"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="#FFF"
+                android:paddingHorizontal="10dp"
+                android:src="@drawable/ic_mc_vrt_pos"
+                />
             <Button
                 android:id="@+id/button2"
-                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:paddingHorizontal="10dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:text="Button" />
-
+                android:text="ALTRO" />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.appcompat.widget.LinearLayoutCompat>

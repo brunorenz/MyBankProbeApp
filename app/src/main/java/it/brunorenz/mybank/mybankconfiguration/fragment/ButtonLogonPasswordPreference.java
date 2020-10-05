@@ -16,6 +16,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceViewHolder;
 
+import it.brunorenz.mybank.mybankconfiguration.MyBankIntents;
 import it.brunorenz.mybank.mybankconfiguration.R;
 import it.brunorenz.mybank.mybankconfiguration.bean.LogonRequest;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
@@ -42,11 +43,14 @@ public class ButtonLogonPasswordPreference extends EditTextPreference {
     public void onClickPressed()
     {
         MyBankServerManager server = MyBankServerManager.createMyBankServerManager(getContext());
+        /*
         LogonRequest req = new LogonRequest();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         req.setEmail(pref.getString(getContext().getString(R.string.PRE_LOGON_EMAIL),""));
         req.setPassword(pref.getString(getContext().getString(R.string.PRE_LOGON_PWD),""));
-        server.logon(req, null);
+
+         */
+        server.logon(null, MyBankIntents.DATA_LOGON_RESPONSE);
     }
 /*
     @Override

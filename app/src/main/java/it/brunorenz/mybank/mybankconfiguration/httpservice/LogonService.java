@@ -29,6 +29,7 @@ public class LogonService extends BaseHttpCallback {
         Error er = new Error();
         er.setCode(response.code());
         String message = null;
+        boolean ok = false;
         if (response.code() == 200) {
             String myResponse = response.body().string();
             Log.d(TAG, myResponse);
@@ -38,14 +39,7 @@ public class LogonService extends BaseHttpCallback {
 
                 if (er.getCode() == 0) {
                     Log.i(TAG, "Logon ok con uid "+resp.getUniqueId());
-                    // scrivi in memoria interna ?
-                    /*
-                    if (getDataContainer() != null && getDataContainer() instanceof GenericDataContainer) {
-                        GenericDataContainer dc = (GenericDataContainer) getDataContainer();
-                        dc.getMessageFilter().addAll(ri);
-                        sendBroadCast(dc);
-                    }
-                     */
+                    ok = true;
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Errore chiamata servizio Logon", e);
@@ -53,5 +47,11 @@ public class LogonService extends BaseHttpCallback {
         } else {
             Log.e(TAG, "Errore chiamata servizio Logon : HTTP Code " + response.code() + " - " + response.message());
         }
+        if (getDataContainer() != null && getDataContainer() instanceof GenericDataContainer) {
+            GenericDataContainer dc = (GenericDataContainer) getDataContainer();
+            dc.setLogonOk(ok);
+            sendBroadCast(dc);
+        }
+
     }
 }

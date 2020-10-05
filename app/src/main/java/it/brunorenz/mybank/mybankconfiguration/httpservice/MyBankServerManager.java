@@ -1,15 +1,19 @@
 package it.brunorenz.mybank.mybankconfiguration.httpservice;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import java.security.MessageDigest;
+
+import androidx.preference.PreferenceManager;
 import it.brunorenz.mybank.mybankconfiguration.R;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.bean.LogonRequest;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
 import it.brunorenz.mybank.mybankconfiguration.network.HttpManager;
-import it.brunorenz.mybank.mybankconfiguration.network.IDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.utility.RESTUtil;
+import it.brunorenz.mybank.mybankconfiguration.utility.Utilities;
 
 public class MyBankServerManager extends HttpManager {
     private String serverUrl;
@@ -39,17 +43,27 @@ public class MyBankServerManager extends HttpManager {
         if (serverUrl == null) serverUrl = getContext().getString(R.string.MYBANKSERVER);
         return serverUrl + function;
     }
+
     private String createSecurityUrl(String function) {
-        if (serverSecurityUrl == null) serverSecurityUrl = getContext().getString(R.string.SECURITYSERVER);
+        if (serverSecurityUrl == null)
+            serverSecurityUrl = getContext().getString(R.string.SECURITYSERVER);
         return serverSecurityUrl + function;
     }
+
     public void logon(LogonRequest request, String intent) {
         String url = createSecurityUrl(getContext().getString(R.string.SVC_LOGON));
+        if (request == null || request.getEmail() == null) {
+            request = new LogonRequest();
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+            request.setEmail(pref.getString(getContext().getString(R.string.PRE_LOGON_EMAIL), ""));
+            request.setPassword(pref.getString(getContext().getString(R.string.PRE_LOGON_PWD), ""));
+        }
+        request.setPasswordMd5(Utilities.getMD5(request.getPassword()));
+        //request.setPassword(null);
         try {
-            LogonService service = new LogonService(getContext(),intent,null,false);
+            LogonService service = new LogonService(getContext(), intent, new GenericDataContainer(), false);
             callHttpPost(url, RESTUtil.jsonSerialize(request), service);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             Log.d(TAG, "Errore chiamata servizio " + url, e);
         }
     }
@@ -78,5 +92,6 @@ public class MyBankServerManager extends HttpManager {
         }
 
     }
+
 
 }
