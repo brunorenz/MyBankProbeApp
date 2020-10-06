@@ -80,7 +80,7 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="#FFF"
+                android:background="@color/cardview_light_background"
                 android:paddingHorizontal="10dp"
                 android:src="@drawable/ic_iconfinder_payment_method_american_express_card_206682"
                 />
@@ -89,7 +89,7 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="#FFF"
+                android:background="@color/cardview_light_background"
                 android:paddingHorizontal="10dp"
                 android:src="@drawable/ic_mc_vrt_pos"
                 />
