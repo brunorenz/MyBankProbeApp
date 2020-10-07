@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.preference.PreferenceManager;
-import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.RegisterSMSRequest;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.MessageStatisticManager;

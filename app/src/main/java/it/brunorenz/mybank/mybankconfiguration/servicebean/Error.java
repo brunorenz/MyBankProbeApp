@@ -1,4 +1,4 @@
-package it.brunorenz.mybank.mybankconfiguration.bean;
+package it.brunorenz.mybank.mybankconfiguration.servicebean;
 
 public class Error {
     private int code;

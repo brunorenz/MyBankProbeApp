@@ -1,24 +1,15 @@
 package it.brunorenz.mybank.mybankconfiguration.fragment;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.text.InputType;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceViewHolder;
 
 import it.brunorenz.mybank.mybankconfiguration.MyBankIntents;
 import it.brunorenz.mybank.mybankconfiguration.R;
-import it.brunorenz.mybank.mybankconfiguration.bean.LogonRequest;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
 
 public class ButtonLogonPasswordPreference extends EditTextPreference {

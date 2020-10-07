@@ -5,11 +5,11 @@ import android.util.Log;
 
 import java.io.IOException;
 
-import it.brunorenz.mybank.mybankconfiguration.bean.BaseRequest;
-import it.brunorenz.mybank.mybankconfiguration.bean.Error;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.BaseRequest;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.Error;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
-import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
-import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSResponse;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.RegisterSMSRequest;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.RegisterSMSResponse;
 import it.brunorenz.mybank.mybankconfiguration.bean.RegistrationInfo;
 import it.brunorenz.mybank.mybankconfiguration.network.BaseHttpCallback;
 import it.brunorenz.mybank.mybankconfiguration.network.IDataContainer;
@@ -52,12 +52,35 @@ public class RegisterSMSService extends BaseHttpCallback {
 
             }
         }
-
         super.onHttpFailure(call, e);
     }
 
     @Override
-    protected void onHttpResponse(Call call, Response response) throws IOException {
+    protected void onHttpResponse(String jsonResponse) throws IOException {
+        Error er = new Error();
+        String message =  null;
+        try {
+            RegisterSMSResponse resp = RESTUtil.jsonDeserialize(jsonResponse, RegisterSMSResponse.class);
+            er = resp.getError();
+            RegistrationInfo ri = resp.getData();
+            boolean accepted = false;
+            if (er.getCode() == 0 && ri != null && ri.isAccepted())
+            {
+                message = "Messaggio emesso da "+ri.getBankId()+" di importo "+ri.getImporto()+" euro accettato da MyBank!";
+                accepted = true;
+            }
+            MessageStatisticManager stat = new MessageStatisticManager();
+            stat.processMessage(getContext(), getType(),true,accepted);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Errore chiamata servizio RegisterSMS", e);
+        }
+        if (isSendNotification() && message != null)
+            sendNotification(er,message);
+
+    }
+
+    protected void onHttpResponseXX(Call call, Response response) throws IOException {
         Error er = new Error();
         er.setCode(response.code());
         String message =  null;
@@ -83,8 +106,6 @@ public class RegisterSMSService extends BaseHttpCallback {
         } else {
             Log.e(TAG, "Errore chiamata servizio RegisterSMS : HTTP Code " + response.code() + " - " + response.message());
         }
-        if (isSendNotification() && message != null)
-            sendNotification(er,message);
 
     }
 }

@@ -1,4 +1,6 @@
-package it.brunorenz.mybank.mybankconfiguration.bean;
+package it.brunorenz.mybank.mybankconfiguration.servicebean;
+
+import it.brunorenz.mybank.mybankconfiguration.bean.RegistrationInfo;
 
 public class RegisterSMSResponse extends BaseResponse {
     private RegistrationInfo data;

@@ -4,13 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import java.security.MessageDigest;
-
 import androidx.preference.PreferenceManager;
 import it.brunorenz.mybank.mybankconfiguration.R;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
-import it.brunorenz.mybank.mybankconfiguration.bean.LogonRequest;
-import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.LogonRequest;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.RegisterSMSRequest;
 import it.brunorenz.mybank.mybankconfiguration.network.HttpManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.RESTUtil;
 import it.brunorenz.mybank.mybankconfiguration.utility.Utilities;
@@ -50,6 +48,16 @@ public class MyBankServerManager extends HttpManager {
         return serverSecurityUrl + function;
     }
 
+    public void getMyBankConfiguration(String intent)
+    {
+        String url = createSecurityUrl(getContext().getString(R.string.SVC_GETMYBANKCONFIG));
+        try {
+            GetMyBankConfigurationService service = new GetMyBankConfigurationService(getContext(), intent, new GenericDataContainer(), false);
+            callHttpGet(url, service);
+        } catch (Exception e) {
+            Log.d(TAG, "Errore chiamata servizio " + url, e);
+        }
+    }
     public void logon(LogonRequest request, String intent) {
         String url = createSecurityUrl(getContext().getString(R.string.SVC_LOGON));
         if (request == null || request.getEmail() == null) {
@@ -59,7 +67,6 @@ public class MyBankServerManager extends HttpManager {
             request.setPassword(pref.getString(getContext().getString(R.string.PRE_LOGON_PWD), ""));
         }
         request.setPasswordMd5(Utilities.getMD5(request.getPassword()));
-        //request.setPassword(null);
         try {
             LogonService service = new LogonService(getContext(), intent, new GenericDataContainer(), false);
             callHttpPost(url, RESTUtil.jsonSerialize(request), service);
@@ -86,7 +93,8 @@ public class MyBankServerManager extends HttpManager {
         String url = createUrl(getContext().getString(R.string.SVC_GETEXLNOTY));
         if (type != null) url = url + "?type=" + type;
         try {
-            callHttpGet(url, new GetMessageFilterService(getContext(), intent, new GenericDataContainer(), false));
+            GetMessageFilterService service = new GetMessageFilterService(getContext(), intent, new GenericDataContainer(), false);
+            callHttpGet(url, service);
         } catch (Exception e) {
             Log.d(TAG, "Errore chiamata servizio " + url, e);
         }

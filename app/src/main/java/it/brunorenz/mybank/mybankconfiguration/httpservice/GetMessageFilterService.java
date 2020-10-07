@@ -6,8 +6,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.List;
 
-import it.brunorenz.mybank.mybankconfiguration.bean.Error;
-import it.brunorenz.mybank.mybankconfiguration.bean.GetMessageFilterResponse;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.Error;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.GetMessageFilterResponse;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.bean.MessageFilterData;
 import it.brunorenz.mybank.mybankconfiguration.network.BaseHttpCallback;
@@ -24,7 +24,27 @@ public class GetMessageFilterService extends BaseHttpCallback {
     }
 
     @Override
-    protected void onHttpResponse(Call call, Response response) throws IOException {
+    protected void onHttpResponse(String jsonResponse) throws IOException {
+        try {
+            GetMessageFilterResponse resp = RESTUtil.jsonDeserialize(jsonResponse, GetMessageFilterResponse.class);
+            Error er = resp.getError();
+
+            if (er.getCode() == 0) {
+                List<MessageFilterData> ri = resp.getData();
+                Log.i(TAG, "Letti " + ri.size() + " package per esclusione notifiche");
+                // scrivi in memoria interna ?
+                if (getDataContainer() != null && getDataContainer() instanceof GenericDataContainer) {
+                    GenericDataContainer dc = (GenericDataContainer) getDataContainer();
+                    dc.getMessageFilter().addAll(ri);
+                    sendBroadCast(dc);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Errore chiamata servizio ExcludedNotification", e);
+        }
+    }
+
+    protected void onHttpResponseXX(Call call, Response response) throws IOException {
         Error er = new Error();
         er.setCode(response.code());
         String message = null;

@@ -11,7 +11,11 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import it.brunorenz.mybank.mybankconfiguration.MainActivity;
 import it.brunorenz.mybank.mybankconfiguration.R;
-import it.brunorenz.mybank.mybankconfiguration.bean.Error;
+import it.brunorenz.mybank.mybankconfiguration.bean.RegistrationInfo;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.Error;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.RegisterSMSResponse;
+import it.brunorenz.mybank.mybankconfiguration.utility.MessageStatisticManager;
+import it.brunorenz.mybank.mybankconfiguration.utility.RESTUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -30,15 +34,34 @@ public abstract class BaseHttpCallback implements Callback {
         return context;
     }
 
-    protected abstract void onHttpResponse(Call call, Response response) throws IOException;
+    protected abstract void onHttpResponse(String jsonResponse) throws IOException;
 
-    protected void onHttpFailure(Call call, IOException e)
+    protected void onHttpResponse(Call call, Response response) throws IOException
     {
+        Error er = new Error();
+        er.setCode(response.code());
+        String url = call.request().url().toString();
+        Log.d(TAG,"Response from "+url+" : "+response.code());
+        if (response.code() == 200) {
+            String myResponse = response.body().string();
+            Log.d(TAG, myResponse);
+            try {
+                onHttpResponse(myResponse);
+            } catch (Exception e) {
+                Log.e(TAG, "Errore chiamata servizio RegisterSMS", e);
+            }
+        } else {
+            Log.e(TAG, "Errore chiamata servizio "+url+" : HTTP Code " + response.code() + " - " + response.message());
+        }
+    }
+
+    protected void onHttpFailure(Call call, IOException e) {
         Log.d(TAG, "Failed !!", e);
         Error er = new Error();
         er.setCode(999);
         sendNotification(er, "MyBank error : " + e.getMessage());
     }
+
     public BaseHttpCallback(Context context, String intent, IDataContainer dataContainer, boolean sendNotify) {
         this.context = context;
         this.intent = intent;
@@ -56,7 +79,7 @@ public abstract class BaseHttpCallback implements Callback {
 
     @Override
     public void onFailure(Call call, IOException e) {
-        onHttpFailure(call,e);
+        onHttpFailure(call, e);
     }
 
     @Override
@@ -64,12 +87,11 @@ public abstract class BaseHttpCallback implements Callback {
 
         try {
             onHttpResponse(call, response);
-        } catch (Exception e)
-        {
-            Log.e(TAG,"Errore gestione httpRespone",e);
+        } catch (Exception e) {
+            Log.e(TAG, "Errore gestione httpRespone", e);
         } finally {
             if (response != null)
-            response.close();
+                response.close();
         }
     }
 

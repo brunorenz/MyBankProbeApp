@@ -13,14 +13,9 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
-import java.io.Serializable;
-
 import it.brunorenz.mybank.mybankconfiguration.R;
-import it.brunorenz.mybank.mybankconfiguration.bean.MessageStatisticInfo;
-import it.brunorenz.mybank.mybankconfiguration.utility.MessageStatisticManager;
 
 public class MainFragment extends Fragment {
 

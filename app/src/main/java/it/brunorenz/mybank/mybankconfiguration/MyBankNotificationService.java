@@ -18,7 +18,7 @@ import java.util.Set;
 
 import androidx.preference.PreferenceManager;
 import io.sentry.core.Sentry;
-import it.brunorenz.mybank.mybankconfiguration.bean.RegisterSMSRequest;
+import it.brunorenz.mybank.mybankconfiguration.servicebean.RegisterSMSRequest;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.FileManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.MessageStatisticManager;
