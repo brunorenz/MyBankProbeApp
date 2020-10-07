@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import androidx.preference.PreferenceManager;
@@ -15,6 +16,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import okhttp3.TlsVersion;
 
 public class HttpManager {
@@ -60,14 +62,22 @@ public class HttpManager {
         callHttp(getGetRequest(url), cb);
     }
 
-    protected void callHttpPost(String url, String postBody, Callback cb) {
+    protected Response callHttpPost(String url, String postBody, Callback cb) throws Exception {
         Log.d(TAG, "Call POST Url " + url + " -> " + postBody);
-        callHttp(getPostRequest(url, postBody), cb);
+        Request request = getPostRequest(url, postBody);
+        if (cb != null)
+            callHttp(request, cb);
+        else
+            return callHttpSync(request);
+        return  null;
     }
 
     protected void callHttp(Request request, Callback cb) {
-        //Log.d(TAG, "Call .. "+request.toString());
         buildClient().newCall(request).enqueue(cb);
+    }
+
+    protected Response callHttpSync(Request request) throws IOException {
+        return buildClient().newCall(request).execute();
     }
 
     private OkHttpClient buildClient() {

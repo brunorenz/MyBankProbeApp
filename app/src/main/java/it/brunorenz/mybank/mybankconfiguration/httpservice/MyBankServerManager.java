@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import java.util.concurrent.CountDownLatch;
+
 import androidx.preference.PreferenceManager;
 import it.brunorenz.mybank.mybankconfiguration.R;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
@@ -12,6 +14,7 @@ import it.brunorenz.mybank.mybankconfiguration.servicebean.RegisterSMSRequest;
 import it.brunorenz.mybank.mybankconfiguration.network.HttpManager;
 import it.brunorenz.mybank.mybankconfiguration.utility.RESTUtil;
 import it.brunorenz.mybank.mybankconfiguration.utility.Utilities;
+import okhttp3.Response;
 
 public class MyBankServerManager extends HttpManager {
     private String serverUrl;
@@ -69,7 +72,10 @@ public class MyBankServerManager extends HttpManager {
         request.setPasswordMd5(Utilities.getMD5(request.getPassword()));
         try {
             LogonService service = new LogonService(getContext(), intent, new GenericDataContainer(), false);
-            callHttpPost(url, RESTUtil.jsonSerialize(request), service);
+            CountDownLatch countDownLatch = new CountDownLatch(1);
+            service.setCountDownLatch(countDownLatch);
+            callHttpPost(url, RESTUtil.jsonSerialize(request),service);
+            countDownLatch.await();
         } catch (Exception e) {
             Log.d(TAG, "Errore chiamata servizio " + url, e);
         }

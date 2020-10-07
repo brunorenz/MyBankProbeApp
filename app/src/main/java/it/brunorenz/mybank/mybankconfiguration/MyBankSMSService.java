@@ -102,7 +102,7 @@ public class MyBankSMSService extends Service {
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);
-
+        // check logon status
         builder = new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
                 .setSmallIcon(R.drawable.iconfinder_walletmoneyshoppingatmcard_192)
                 .setContentTitle("MyBank notification")

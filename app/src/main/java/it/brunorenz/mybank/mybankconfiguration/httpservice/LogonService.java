@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import it.brunorenz.mybank.mybankconfiguration.servicebean.Error;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
@@ -16,9 +17,19 @@ import okhttp3.Response;
 
 public class LogonService extends BaseHttpCallback {
     public final static String TAG = LogonService.class.getName();
-
+    private CountDownLatch countDownLatch;
     public LogonService(Context context, String intent, IDataContainer dataContainer, boolean sendNotify) {
         super(context, intent, dataContainer, sendNotify);
+    }
+
+    public void setCountDownLatch(CountDownLatch countDownLatch) {
+        this.countDownLatch = countDownLatch;
+    }
+
+    @Override
+    public void onFailure(Call call, IOException e) {
+        super.onFailure(call, e);
+        countDownLatch.countDown();
     }
 
     @Override
@@ -35,6 +46,7 @@ public class LogonService extends BaseHttpCallback {
         } catch (Exception e) {
             Log.e(TAG, "Errore chiamata servizio Logon", e);
         }
+        countDownLatch.countDown();
         if (getDataContainer() != null && getDataContainer() instanceof GenericDataContainer) {
             GenericDataContainer dc = (GenericDataContainer) getDataContainer();
             dc.setLogonOk(ok);

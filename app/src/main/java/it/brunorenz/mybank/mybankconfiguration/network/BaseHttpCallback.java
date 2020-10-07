@@ -11,11 +11,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import it.brunorenz.mybank.mybankconfiguration.MainActivity;
 import it.brunorenz.mybank.mybankconfiguration.R;
-import it.brunorenz.mybank.mybankconfiguration.bean.RegistrationInfo;
 import it.brunorenz.mybank.mybankconfiguration.servicebean.Error;
-import it.brunorenz.mybank.mybankconfiguration.servicebean.RegisterSMSResponse;
-import it.brunorenz.mybank.mybankconfiguration.utility.MessageStatisticManager;
-import it.brunorenz.mybank.mybankconfiguration.utility.RESTUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -34,24 +30,28 @@ public abstract class BaseHttpCallback implements Callback {
         return context;
     }
 
-    protected abstract void onHttpResponse(String jsonResponse) throws IOException;
+    public void processSynchronousResponse(Response response) throws Exception {
+        onHttpResponse(null, response);
+    }
 
-    protected void onHttpResponse(Call call, Response response) throws IOException
-    {
+    protected abstract void onHttpResponse(String jsonResponse) throws Exception;
+
+    private void onHttpResponse(Call call, Response response) throws Exception {
+        String url = call != null ? call.request().url().toString() : "sync call";
         Error er = new Error();
         er.setCode(response.code());
-        String url = call.request().url().toString();
-        Log.d(TAG,"Response from "+url+" : "+response.code());
+
+        Log.d(TAG, "Response from " + url + " : " + response.code());
         if (response.code() == 200) {
             String myResponse = response.body().string();
             Log.d(TAG, myResponse);
             try {
                 onHttpResponse(myResponse);
             } catch (Exception e) {
-                Log.e(TAG, "Errore chiamata servizio RegisterSMS", e);
+                Log.e(TAG, "Errore chiamata servizio " + url, e);
             }
         } else {
-            Log.e(TAG, "Errore chiamata servizio "+url+" : HTTP Code " + response.code() + " - " + response.message());
+            Log.e(TAG, "Errore chiamata servizio " + url + " : HTTP Code " + response.code() + " - " + response.message());
         }
     }
 

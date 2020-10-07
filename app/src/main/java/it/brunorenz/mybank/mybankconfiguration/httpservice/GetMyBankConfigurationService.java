@@ -12,8 +12,6 @@ import it.brunorenz.mybank.mybankconfiguration.network.IDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.servicebean.Error;
 import it.brunorenz.mybank.mybankconfiguration.servicebean.GetMyBankConfigurationResponse;
 import it.brunorenz.mybank.mybankconfiguration.utility.RESTUtil;
-import okhttp3.Call;
-import okhttp3.Response;
 
 public class GetMyBankConfigurationService extends BaseHttpCallback {
     public final static String TAG = GetMyBankConfigurationService.class.getName();
@@ -41,35 +39,6 @@ public class GetMyBankConfigurationService extends BaseHttpCallback {
             }
         } catch (Exception e) {
             Log.e(TAG, "Errore chiamata servizio ExcludedNotification", e);
-        }
-    }
-
-    protected void onHttpResponseXX(Call call, Response response) throws IOException {
-        Error er = new Error();
-        er.setCode(response.code());
-        if (response.code() == 200) {
-            String myResponse = response.body().string();
-            Log.d(TAG, myResponse);
-            try {
-                GetMyBankConfigurationResponse resp = RESTUtil.jsonDeserialize(myResponse, GetMyBankConfigurationResponse.class);
-                er = resp.getError();
-                if (er.getCode() == 0) {
-                    MyBankConfigurationData dt = resp.getData();
-                    if (dt != null) {
-                        Log.i(TAG, "Letti " + dt.getAccounts().size() + " record accounts");
-                        // scrivi in memoria interna ?
-                        if (getDataContainer() != null && getDataContainer() instanceof GenericDataContainer) {
-                            GenericDataContainer dc = (GenericDataContainer) getDataContainer();
-                            dc.getAccounts().addAll(dt.getAccounts());
-                            sendBroadCast(dc);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Errore chiamata servizio ExcludedNotification", e);
-            }
-        } else {
-            Log.e(TAG, "Errore chiamata servizio ExcludedNotification : HTTP Code " + response.code() + " - " + response.message());
         }
     }
 }
