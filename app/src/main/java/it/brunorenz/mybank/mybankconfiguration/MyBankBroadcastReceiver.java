@@ -19,6 +19,8 @@ public class MyBankBroadcastReceiver extends BroadcastReceiver {
         String smsSender = "";
         StringBuffer smsBody = new StringBuffer("");
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+            MyBankSMSService.startService(context);
+            /*
             Intent i = new Intent(context, MyBankSMSService.class);
             Log.d(TAG, "Start service  " + MyBankSMSService.class.getName());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -26,6 +28,7 @@ public class MyBankBroadcastReceiver extends BroadcastReceiver {
             } else {
                 context.startService(i);
             }
+            */
         }
     }
 }

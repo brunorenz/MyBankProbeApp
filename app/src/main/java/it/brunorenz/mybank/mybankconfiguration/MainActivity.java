@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Android KITKAT Version : " + Build.VERSION_CODES.KITKAT);
     }
 
-
+// https://blog.intive-fdv.com/4-tools-create-graphic-resources-android/
     /**
      * Initial task for MyBank
      */
@@ -106,12 +106,15 @@ public class MainActivity extends AppCompatActivity {
         // do logon
         myBankServer.logon(null,MyBankIntents.DATA_LOGON_RESPONSE);
         // start service
+        MyBankSMSService.startService(this);
+        /*
         Intent i = new Intent(this, MyBankSMSService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(i);
         } else {
             startService(i);
         }
+         */
         //
         myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_SMS_MESSAGE, "SMS");
         myBankServer.getMessageFilter(MyBankIntents.DATA_EXCLUDED_PUSH_MESSAGE, "PUSH");
