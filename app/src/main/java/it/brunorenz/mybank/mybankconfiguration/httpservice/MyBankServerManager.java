@@ -53,7 +53,7 @@ public class MyBankServerManager extends HttpManager {
 
     public void getMyBankConfiguration(String intent)
     {
-        String url = createSecurityUrl(getContext().getString(R.string.SVC_GETMYBANKCONFIG));
+        String url = createUrl(getContext().getString(R.string.SVC_GETMYBANKCONFIG));
         try {
             GetMyBankConfigurationService service = new GetMyBankConfigurationService(getContext(), intent, new GenericDataContainer(), false);
             callHttpGet(url, service);

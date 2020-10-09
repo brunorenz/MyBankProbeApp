@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linearLayoutCompat"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textSelBanca"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="20dp"
+        android:text="Carta addebito"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/elencoCarte"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="@id/textSelBanca"
+        app:layout_constraintTop_toBottomOf="@id/textSelBanca" />
+
+    <TextView
+        android:id="@+id/textDataAddebito"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Data addebito"
+        android:textColor="@color/colorAccent"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="@id/textSelBanca"
+        app:layout_constraintTop_toBottomOf="@id/elencoCarte" />
+
+    <EditText
+        android:id="@+id/dataScontrino"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:focusable="false"
+        android:clickable="true"
+        android:ems="10"
+        android:inputType="date"
+        android:singleLine="true"
+        app:layout_constraintStart_toStartOf="@id/textSelBanca"
+        app:layout_constraintTop_toBottomOf="@id/textDataAddebito" />
+
+    <TextView
+        android:id="@+id/textImporto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Importo scontrino"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintStart_toStartOf="@id/textSelBanca"
+        app:layout_constraintTop_toBottomOf="@id/dataScontrino" />
+
+    <EditText
+        android:id="@+id/importoScontrino"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:focusable="true"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:singleLine="true"
+        app:layout_constraintStart_toStartOf="@id/textSelBanca"
+        app:layout_constraintTop_toBottomOf="@id/textImporto" />
+
+    <TextView
+        android:id="@+id/textEsercente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Categoria"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintStart_toStartOf="@id/textSelBanca"
+        app:layout_constraintTop_toBottomOf="@id/importoScontrino" />
+
+    <Spinner
+        android:id="@+id/elencoCategorie"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        app:layout_constraintStart_toStartOf="@id/textSelBanca"
+        app:layout_constraintTop_toBottomOf="@id/textEsercente" />
+
+    <Button
+        android:id="@+id/buttonCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:text="Acquisisci"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/buttonAdd" />
+
+    <Button
+        android:id="@+id/buttonAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aggiungi"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonCamera"
+        app:layout_constraintEnd_toStartOf="@+id/buttonCamera"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
