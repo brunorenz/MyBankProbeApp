@@ -13,10 +13,10 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <!--  MyBank Resources 172.28.154.233-->
-    <string name="MYBANKSERVER">https://mybank.65bruno.it/mybank/rest/</string>
-    <string name="SECURITYSERVER">https://mybank.65bruno.it/security/rest/</string>
-    <string name="MYBANKSERVER_">http://10.0.2.2:8102/mybank/rest/</string>
-    <string name="SECURITYSERVER_">http://10.0.2.2:8102/security/rest/</string>
+    <string name="MYBANKSERVER_">https://mybank.65bruno.it/mybank/rest/</string>
+    <string name="SECURITYSERVER_">https://mybank.65bruno.it/security/rest/</string>
+    <string name="MYBANKSERVER">http://10.0.2.2:8102/mybank/rest/</string>
+    <string name="SECURITYSERVER">http://10.0.2.2:8102/security/rest/</string>
     <string name="SVC_LOGON">p/login</string>
     <string name="SVC_GETMYBANKCONFIG">g/getMyBankConfiguration</string>
     <string name="SVC_REGISTERSMS">p/registerSMS</string>

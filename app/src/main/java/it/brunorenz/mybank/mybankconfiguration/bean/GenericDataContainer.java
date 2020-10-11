@@ -3,7 +3,6 @@ package it.brunorenz.mybank.mybankconfiguration.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.brunorenz.mybank.mybankconfiguration.bean.MessageFilterData;
 import it.brunorenz.mybank.mybankconfiguration.network.IDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.servicebean.BaseRequest;
 
@@ -12,6 +11,13 @@ public class GenericDataContainer implements IDataContainer {
     private boolean logonOk;
     private BaseRequest baseRequest;
     private List<BankAccount> accounts;
+    private List<Category> categories;
+
+
+    public List<Category> getCategories() {
+        if (categories == null) categories = new ArrayList<>();
+        return categories;
+    }
 
     public List<BankAccount> getAccounts() {
         if (accounts == null) accounts = new ArrayList<>();

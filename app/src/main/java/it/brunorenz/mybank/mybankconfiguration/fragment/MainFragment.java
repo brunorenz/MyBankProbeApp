@@ -34,7 +34,7 @@ public class MainFragment extends Fragment {
     private ViewPager2 viewPager;
 
     private ImageButton amexButton;
-    private Button masterCardButton;
+    private ImageButton masterCardButton;
     private Button addReceiptButton;
 
     @Override
@@ -72,16 +72,18 @@ public class MainFragment extends Fragment {
         if (amexButton != null) amexButton.setOnClickListener(new View.OnClickListener() {
                                                                   @Override
                                                                   public void onClick(View v) {
-                                                                      addReceiptFragment();
+                                                                      addReceiptFragment("AMEX_VERDE");
                                                                   }
                                                               }
         );
     }
 
-    private void addReceiptFragment() {
+    private void addReceiptFragment(String bank) {
         FragmentManager manager = getParentFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.mainPage, new AddReceiptFragment());
+        AddReceiptFragment f = new AddReceiptFragment();
+        if (bank != null) f.setInitialAccount(bank);
+        transaction.replace(R.id.mainPage, f);
         transaction.addToBackStack(null);
         transaction.commit();
     }

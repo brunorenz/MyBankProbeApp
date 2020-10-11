@@ -33,6 +33,7 @@ public class GetMyBankConfigurationService extends BaseHttpCallback {
                     if (getDataContainer() != null && getDataContainer() instanceof GenericDataContainer) {
                         GenericDataContainer dc = (GenericDataContainer) getDataContainer();
                         dc.getAccounts().addAll(dt.getAccounts());
+                        dc.getCategories().addAll(dt.getCategories());
                         sendBroadCast(dc);
                     }
                 }

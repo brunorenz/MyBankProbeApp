@@ -6,20 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -27,17 +23,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import it.brunorenz.mybank.mybankconfiguration.MyBankIntents;
 import it.brunorenz.mybank.mybankconfiguration.R;
-import it.brunorenz.mybank.mybankconfiguration.SmsBroadcastReceiver;
 import it.brunorenz.mybank.mybankconfiguration.bean.BankAccount;
+import it.brunorenz.mybank.mybankconfiguration.bean.Category;
 import it.brunorenz.mybank.mybankconfiguration.bean.GenericDataContainer;
 import it.brunorenz.mybank.mybankconfiguration.httpservice.MyBankServerManager;
 
@@ -47,16 +43,35 @@ public class AddReceiptFragment extends Fragment {
     private Spinner elencoBanche;
     private ArrayAdapter<String> elencoBancheAdapter;
     private Spinner elencoCategorie;
+    private ArrayAdapter<String> elencoCategorieAdapter;
     private EditText importo;
     private EditText dataScontrino;
     private MyBankServerManager serverManager;
     private Movimento movimento;
+    private List<BankAccount> accounts;
+    private List<Category> categories;
+
+    private String initialAccount;
+
+    public void setInitialAccount(String initialAccount) {
+        this.initialAccount = initialAccount;
+    }
+
+    public List<Category> getCategories() {
+        if (categories == null) categories = new ArrayList<>();
+        return categories;
+    }
+
+    public List<BankAccount> getAccounts() {
+        if (accounts == null) accounts = new ArrayList<>();
+        return accounts;
+    }
 
     private class Movimento {
         BigDecimal importo;
         Date data;
-        String banca;
-        String esercente;
+        Category categoria;
+        BankAccount banca;
 
         public BigDecimal getImporto() {
             return importo;
@@ -74,20 +89,20 @@ public class AddReceiptFragment extends Fragment {
             this.data = data;
         }
 
-        public String getBanca() {
+        public Category getCategoria() {
+            return categoria;
+        }
+
+        public void setCategoria(Category categoria) {
+            this.categoria = categoria;
+        }
+
+        public BankAccount getBanca() {
             return banca;
         }
 
-        public void setBanca(String banca) {
+        public void setBanca(BankAccount banca) {
             this.banca = banca;
-        }
-
-        public String getEsercente() {
-            return esercente;
-        }
-
-        public void setEsercente(String esercente) {
-            this.esercente = esercente;
         }
     }
 
@@ -126,6 +141,25 @@ public class AddReceiptFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // selectect
                 Log.d(TAG, "Selected " + position);
+                movimento.setBanca(getAccounts().get(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.d(TAG, "onNothingSelected ");
+            }
+        });
+
+        elencoCategorie = (Spinner) view.findViewById(R.id.elencoCategorie);
+        elencoCategorieAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item);
+        elencoCategorieAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        elencoCategorie.setAdapter(elencoCategorieAdapter);
+        elencoCategorie.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // selectect
+                Log.d(TAG, "Selected " + position);
+                movimento.setCategoria(getCategories().get(position));
             }
 
             @Override
@@ -140,18 +174,6 @@ public class AddReceiptFragment extends Fragment {
         dataScontrino = (EditText) view.findViewById(R.id.dataScontrino);
         manageDataScontrino(dataScontrino);
 
-        //Creating the ArrayAdapter instance having the country list
-        /*
-        String[] l = new String[2];
-        l[0] = "UNO";
-        l[1] = "DUE BBBBB  AAAAAAAA";
-        ArrayAdapter<String> aa = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item, l);
-        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //Setting the ArrayAdapter data on the Spinner
-        elencoBanche.setAdapter(aa);
-
-         */
-
         manageElencoBanche();
     }
 
@@ -161,7 +183,7 @@ public class AddReceiptFragment extends Fragment {
             if (val != null && val.length() > 0) {
                 BigDecimal d = new BigDecimal(val);
                 movimento.setImporto(d);
-                out = String.format(Locale.ITALY,"%.2f €", d);
+                out = String.format(Locale.ITALY, "%.2f €", d);
                 Log.d(TAG, "Importo : " + out);
             }
         } catch (Exception e) {
@@ -178,15 +200,18 @@ public class AddReceiptFragment extends Fragment {
     }
 
     private void manageDataScontrino(EditText dataScontrino) {
-        if (dataScontrino != null)
-        {
+        if (dataScontrino != null) {
             final Calendar myCalendar = Calendar.getInstance();
+            // set initial value
+            movimento.setData(myCalendar.getTime());
+            updateLabel(myCalendar);
             DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                     myCalendar.set(Calendar.YEAR, year);
                     myCalendar.set(Calendar.MONTH, month);
                     myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                    movimento.setData(myCalendar.getTime());
                     updateLabel(myCalendar);
                 }
             };
@@ -223,7 +248,7 @@ public class AddReceiptFragment extends Fragment {
                     Log.d(TAG, ">>> onFocusChange " + hasFocus);
                     if (hasFocus) {
                         if (movimento.getImporto() != null) {
-                            String out = String.format(Locale.ITALY,"%.2f", movimento.getImporto());
+                            String out = String.format(Locale.ITALY, "%.2f", movimento.getImporto());
                             importo.setText(out);
                         }
                     } else {
@@ -240,7 +265,7 @@ public class AddReceiptFragment extends Fragment {
                     Log.d(TAG, ">>> onTouch " + event.toString());
                     if (event.getAction() == KeyEvent.ACTION_DOWN) {
                         if (movimento.getImporto() != null) {
-                            String out = String.format(Locale.ITALY,"%.2f", movimento.getImporto());
+                            String out = String.format(Locale.ITALY, "%.2f", movimento.getImporto());
                             importo.setText(out);
                         }
                     }
@@ -271,12 +296,21 @@ public class AddReceiptFragment extends Fragment {
 
                     GenericDataContainer gc = (GenericDataContainer) intent.getSerializableExtra("DATI");
                     if (gc != null) {
+                        int pos = -1;
+                        getAccounts().addAll(gc.getAccounts());
+                        getCategories().addAll(gc.getCategories());
                         for (BankAccount ca : gc.getAccounts()) {
                             elencoBancheAdapter.add(ca.getDescription());
+                            if (initialAccount != null && initialAccount.equals(ca.getBankName()+"_"+ca.getAccount())) pos = elencoBancheAdapter.getCount()-1;
+
                         }
                         elencoBancheAdapter.notifyDataSetChanged();
+                        for (Category ca : gc.getCategories()) {
+                            elencoCategorieAdapter.add(ca.getDescription());
+                        }
+                        elencoCategorieAdapter.notifyDataSetChanged();
+                        if (pos >= 0) elencoBanche.setSelection(pos);
                     }
-                    //elencoBanche.setSelection(3);
                 }
             }
         };

@@ -6,15 +6,27 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/textTitolo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Aggiungi Scontrino"
+        android:textAlignment="center"
+        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    />
+
+    <TextView
         android:id="@+id/textSelBanca"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="60dp"
         android:text="Carta addebito"
         android:textColor="@color/colorAccent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="@id/textTitolo"
+        app:layout_constraintTop_toTopOf="@id/textTitolo" />
 
     <Spinner
         android:id="@+id/elencoCarte"
@@ -89,6 +101,19 @@
         app:layout_constraintStart_toStartOf="@id/textSelBanca"
         app:layout_constraintTop_toBottomOf="@id/textEsercente" />
 
+
+    <Button
+        android:id="@+id/buttonAggiungi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:text="Aggiungi"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+
+<!--
     <Button
         android:id="@+id/buttonCamera"
         android:layout_width="wrap_content"
@@ -109,6 +134,6 @@
         app:layout_constraintEnd_toStartOf="@+id/buttonCamera"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
-
+-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
